@@ -8,11 +8,10 @@ import {
 
 class AuthController {
   async login(req, res) {
-    const { email, password, staySignedIn, role } = req.body || {};
-
+    const { username, password, staySignedIn, role } = req.body || {};
     const errorMessage = "Failed to authenticate!";
 
-    if (!email || !password) {
+    if (!username || !password) {
       return sendErrorResponse(req, res, 401, errorMessage);
     }
 
@@ -27,7 +26,7 @@ class AuthController {
       return null;
     }
 
-    const auth = await authenticateUser(email, password, expiryTime, role);
+    const auth = await authenticateUser(username, password, expiryTime, role);
 
     if (!auth || !auth.user || !auth.refreshToken || !auth.accessToken) {
       return sendErrorResponse(req, res, 401, errorMessage);

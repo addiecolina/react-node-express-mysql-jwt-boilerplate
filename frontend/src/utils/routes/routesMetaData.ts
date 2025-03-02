@@ -5,6 +5,7 @@ export type Routes = {
 const routes: Routes = {
   "/": "Home",
   "/login": "Login",
+  "/register": "Register",
   "/admin": "Dashboard | Admin panel",
   "/admin/login": "Login | Admin panel",
   "/employee": "Dashboard | Employee panel",

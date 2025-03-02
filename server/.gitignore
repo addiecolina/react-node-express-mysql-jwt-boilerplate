@@ -1,7 +1,6 @@
 node_modules
 private
 public/uploads
-certs
 .env
 .env.*
 !.env.example

@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./style.css";
 import AuthProviderRoutes from "./utils/routes/AuthProviderRoutes";
 import HeaderLayout from "./layouts/HeaderLayout";
+import RegisterPage from "./pages/login/RegisterPage";
 
 const queryClient = new QueryClient();
 
@@ -14,6 +15,7 @@ function App() {
         <Routes>
           <Route path="*" element={<HeaderLayout />}>
             <Route index element={<Landing />} />
+            <Route path="register" element={<RegisterPage />} />
             <Route path="*" element={<AuthProviderRoutes />} />
           </Route>
         </Routes>

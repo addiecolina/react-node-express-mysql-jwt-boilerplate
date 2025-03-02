@@ -1,15 +1,45 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useVerifyToken } from "../../utils/hooks/useVerifyToken";
 import { useAuthContext } from "../../utils/hooks/useCustomContext";
 import useAxiosInstance from "../../utils/config/axiosInstance";
 import { ApiResponse } from "../../../types/ApiResponse";
-import { TextField } from "@mui/material";
+import Button from "@mui/material/Button";
+import CssBaseline from "@mui/material/CssBaseline";
+import TextField from "@mui/material/TextField";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+import Link from "@mui/material/Link";
+import Paper from "@mui/material/Paper";
+import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+
+function Copyright(props: any) {
+  return (
+    <Typography
+      variant="body2"
+      color="text.secondary"
+      align="center"
+      {...props}
+    >
+      {"Copyright © "}
+      <Link color="inherit" href="https://mui.com/">
+        Adrian.A.Colina
+      </Link>{" "}
+      {new Date().getFullYear()}
+      {"."}
+    </Typography>
+  );
+}
+
+const theme = createTheme();
 
 const Login = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [email, setEmail] = useState<string>("");
+  const [username, setUserName] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [staySignedIn, setStaySignedIn] = useState<boolean>(false);
   const [urlSlug, setUrlSlug] = useState<string>("");
@@ -28,7 +58,7 @@ const Login = () => {
     setUrlSlug(
       location.pathname.split("/") && location.pathname.split("/")[1]
         ? "/" + location.pathname.split("/")[1]
-        : "/"
+        : "/admin"
     );
   }, [location]);
 
@@ -49,11 +79,11 @@ const Login = () => {
     const urlSlug =
       location.pathname.split("/") && location.pathname.split("/")[1]
         ? location.pathname.split("/")[1]
-        : "/";
+        : "admin";
     const response = await axiosInstance.post<ApiResponse>(
       "/auth/login",
       {
-        email: email,
+        username: username,
         password: password,
         role: urlSlug,
         staySignedIn: staySignedIn,
@@ -82,7 +112,7 @@ const Login = () => {
       }
     }
   }, [
-    email,
+    username,
     password,
     location,
     axiosInstance,
@@ -93,51 +123,101 @@ const Login = () => {
   ]);
 
   return (
-    <>
-      <div style={{ display: "flex", justifyContent: "center" }}>
-        <div>
-          <h1 style={{ textAlign: "center" }}>Login Page</h1>
-          <form onSubmit={handleSubmit}>
-            <div style={{ marginBottom: "1rem" }}>
+    <ThemeProvider theme={theme}>
+      <Grid container component="main" sx={{ height: "100vh" }}>
+        <CssBaseline />
+        <Grid
+          item
+          xs={false}
+          sm={4}
+          md={7}
+          sx={{
+            backgroundImage: "url(https://source.unsplash.com/random)",
+            backgroundRepeat: "no-repeat",
+            backgroundColor: (t) =>
+              t.palette.mode === "light"
+                ? t.palette.grey[50]
+                : t.palette.grey[900],
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        />
+        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+          <Box
+            sx={{
+              my: 8,
+              mx: 4,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <Typography component="h1" variant="h5">
+              Sign in
+            </Typography>
+            <Box
+              component="form"
+              noValidate
+              onSubmit={handleSubmit}
+              sx={{ mt: 1 }}
+            >
               <TextField
-                type="email"
-                name="email"
-                label="Email"
-                onChange={(e) => setEmail(e.target.value)}
-                required={true}
-                autoFocus={true}
-                style={{ marginRight: "1rem" }}
+                margin="normal"
+                required
+                fullWidth
+                id="username"
+                label="Username"
+                name="username"
+                onChange={(e) => setUserName(e.target.value)}
+                autoFocus
               />
               <TextField
-                type="password"
+                margin="normal"
+                required
+                fullWidth
                 name="password"
                 label="Password"
+                type="password"
+                id="password"
                 onChange={(e) => setPassword(e.target.value)}
-                required={true}
               />
-              <input
-                type="checkbox"
-                name="staySignedIn"
-                id="staySignedIn"
-                onChange={(e) => setStaySignedIn(e.currentTarget.checked)}
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    name="staySignedIn"
+                    id="staySignedIn"
+                    onChange={(e) => setStaySignedIn(e.currentTarget.checked)}
+                    color="primary"
+                  />
+                }
+                label="Stay signed in"
               />
-              <label htmlFor="staySignedIn"> Stay Signed In?</label>
-            </div>
-            <button className="btn" type="submit">
-              Login
-            </button>
-          </form>
-        </div>
-      </div>
-      <br />
-      <br />
-      <Link className="btn" to={"/"} style={{ marginRight: "1rem" }}>
-        Go to Home page
-      </Link>
-      <Link className="btn" to={urlSlug}>
-        Go to protected route
-      </Link>
-    </>
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2 }}
+              >
+                Sign In
+              </Button>
+              <Grid container>
+                <Grid item xs>
+                  <Link href="#" variant="body2">
+                    Forgot password?
+                  </Link>
+                </Grid>
+                <Grid item>
+                  <Link href="#" variant="body2">
+                    {"Don't have an account? Sign Up"}
+                  </Link>
+                </Grid>
+              </Grid>
+              <Copyright sx={{ mt: 5 }} />
+            </Box>
+          </Box>
+        </Grid>
+      </Grid>
+    </ThemeProvider>
   );
 };
 

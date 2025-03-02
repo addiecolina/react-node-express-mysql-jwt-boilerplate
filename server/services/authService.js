@@ -4,18 +4,17 @@ import { cryptoAESEncryption } from "./encryptionService.js";
 import { getUserByEmail } from "../models/AuthModel.js";
 import { convertToRoleData } from "../utils/globals.js";
 
-export async function authenticateUser(email, password, expiryTime, role) {
-  if (!email || !password || !expiryTime || !role) {
+export async function authenticateUser(username, password, expiryTime, role) {
+  if (!username || !password || !expiryTime || !role) {
     return null;
   }
 
   try {
     const userRole = convertToRoleData(role);
-
-    const user = await getUserByEmail(email, userRole ? userRole : "");
+    const user = await getUserByEmail(username, userRole ? userRole : "");
     const dbHash = user.u_password;
-
-    if (user.u_email !== email || !dbHash) {
+    console.log(user, userRole);
+    if (user.u_name !== username || !dbHash) {
       return null;
     }
 

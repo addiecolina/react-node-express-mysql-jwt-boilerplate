@@ -1,14 +1,14 @@
 import pool from "../config/db.js";
 
-export const getUserByEmail = async (email, role) => {
-  if (!email || !role) {
+export const getUserByEmail = async (username, role) => {
+  if (!username || !role) {
     return null;
   }
 
   try {
     const authenticated = await pool.query(
-      "SELECT * from user WHERE u_email = ? AND u_role = ? AND u_deleted_status = 0 AND u_status = 1",
-      [email, role]
+      "SELECT * from user WHERE u_name = ? AND u_role = ? AND u_deleted_status = 0 AND u_status = 1",
+      [username, role]
     );
     const [rows] = authenticated;
 
@@ -17,6 +17,7 @@ export const getUserByEmail = async (email, role) => {
     }
     return rows[0];
   } catch (error) {
+    console.log("get user error");
     return null;
   }
 };

@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import apiAuthRoutesMain from "./routes/api/auth/auth.js";
+import apiUserRoutesMain from "./routes/api/user/user.js";
 import apiRoutesMain from "./routes/api/main.js";
 import webRoutesMain from "./routes/web/main.js";
 import dotenv from "dotenv";
@@ -46,6 +47,7 @@ app.use(
 );
 
 app.use("/api/auth", apiAuthRoutesMain);
+app.use("/api/user", apiUserRoutesMain);
 app.use("/api", apiRoutesMain);
 app.use("/", webRoutesMain);
 
