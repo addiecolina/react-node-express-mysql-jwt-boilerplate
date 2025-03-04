@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useLogout } from "../../../utils/hooks/useLogout";
 import { TextField, Typography } from "@mui/material";
+import Table from "../../shared/Table";
 
 const Dashboard = () => {
   const logout = useLogout();
@@ -16,8 +17,11 @@ const Dashboard = () => {
         </Typography>
         <br />
         <TextField type="text" name="test" label="Outlined" color="error" />
+        <Table />
       </div>
-      <Link className="btn" to={"/admin/test"}>Test Route</Link>
+      <Link className="btn" to={"/admin/test"}>
+        Test Route
+      </Link>
       <button type="button" className="btn" onClick={logout}>
         Logout
       </button>
