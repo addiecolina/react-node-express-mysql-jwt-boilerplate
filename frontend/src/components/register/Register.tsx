@@ -149,7 +149,7 @@ const Register: React.FC = () => {
                 <TextField
                   {...field}
                   label="Password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   error={!!fieldState.error}
                   helperText={
                     fieldState.error ? fieldState.error.message : null

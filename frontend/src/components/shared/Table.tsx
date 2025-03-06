@@ -4,6 +4,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import { createTheme } from "@mui/material/styles";
 import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
+import EditIcon from "@mui/icons-material/Edit";
 
 const muiCache = createCache({
   key: "mui-datatables",
@@ -12,9 +13,23 @@ const muiCache = createCache({
 
 const Table: React.FC = () => {
   const columns = [
-    { name: "Name", options: { filterOptions: { fullWidth: true } } },
-    "Title",
-    "Location",
+    { name: "Title", options: { filter: false } },
+    { name: "Task", options: { filter: false } },
+    { name: "Priority", options: { filterOptions: { fullWidth: true } } },
+    { name: "Current State", options: { filterOptions: { fullWidth: true } } },
+    {
+      name: "Edit",
+      options: {
+        filter: false,
+        sort: false,
+        empty: true,
+        customBodyRenderLite: (dataIndex: number, rowIndex: number) => {
+          return (
+            <EditIcon onClick={() => console.log("foo", dataIndex, rowIndex)} />
+          );
+        },
+      },
+    },
   ];
 
   const options: MUIDataTableOptions = {
@@ -23,22 +38,10 @@ const Table: React.FC = () => {
   };
 
   const data = [
-    ["Gabby George", "Business Analyst", "Minneapolis"],
-    [
-      "Aiden Lloyd",
-      "Business Consultant for an International Company and CEO of Tony's Burger Palace",
-      "Dallas",
-    ],
-    ["Jaden Collins", "Attorney", "Santa Ana"],
-    ["Franky Rees", "Business Analyst", "St. Petersburg"],
-    ["Aaren Rose", null, "Toledo"],
-    ["Johnny Jones", "Business Analyst", "St. Petersburg"],
-    ["Jimmy Johns", "Business Analyst", "Baltimore"],
-    ["Jack Jackson", "Business Analyst", "El Paso"],
-    ["Joe Jones", "Computer Programmer", "El Paso"],
-    ["Jacky Jackson", "Business Consultant", "Baltimore"],
-    ["Jo Jo", "Software Developer", "Washington DC"],
-    ["Donna Marie", "Business Manager", "Annapolis"],
+    ["Task 1", "First Task", "Critical", "Completed"],
+    ["Task 2", "Second Task", "High", "Pending"],
+    ["Task 3", "Third Task", "Medium", "Completed"],
+    ["Task 4", "Fourth Task", "Low", "In-Progress"],
   ];
 
   return (
