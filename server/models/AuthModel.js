@@ -15,6 +15,7 @@ export const getUserByEmail = async (username, role) => {
     if (Object.keys(rows).length === 0) {
       return null;
     }
+    console.log("User:", rows[0]);
     return rows[0];
   } catch (error) {
     console.log("get user error");

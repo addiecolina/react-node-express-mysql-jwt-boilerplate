@@ -1,4 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useVerifyToken } from "../../utils/hooks/useVerifyToken";
 import { useAuthContext } from "../../utils/hooks/useCustomContext";
@@ -6,7 +9,6 @@ import useAxiosInstance from "../../utils/config/axiosInstance";
 import { ApiResponse } from "../../../types/ApiResponse";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import Link from "@mui/material/Link";
 import Paper from "@mui/material/Paper";
@@ -15,14 +17,28 @@ import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import LandingWrapper from "../shared/LandingWrapper";
 import Copyright from "../shared/Copyright";
+import { InputAdornment, IconButton, Alert } from "@mui/material";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+
+const schema = z.object({
+  username: z.string().min(1, { message: "Username cannot be blank" }),
+  password: z.string().min(6, { message: "Password cannot be blank" }),
+  staySignedIn: z.boolean().optional(),
+});
+
+type FormData = z.infer<typeof schema>;
 
 const Login = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [username, setUserName] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [staySignedIn, setStaySignedIn] = useState<boolean>(false);
   const [urlSlug, setUrlSlug] = useState<string>("");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [alertMessage, setAlertMessage] = useState<string>("");
+
+  const { control, handleSubmit } = useForm<FormData>({
+    resolver: zodResolver(schema),
+  });
 
   const { isAuth, user, setIsAuth, setUser, setAccessToken } = useAuthContext();
 
@@ -50,57 +66,63 @@ const Login = () => {
     }
   }, [urlSlug, navigate, isAuth, user, verifyToken]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    getLoginData();
+  const onSubmit = async (data: FormData) => {
+    getLoginData(data);
   };
 
-  const getLoginData = useCallback(async () => {
-    const urlSlug =
-      location.pathname.split("/") && location.pathname.split("/")[1]
-        ? location.pathname.split("/")[1]
-        : "admin";
-    const response = await axiosInstance.post<ApiResponse>(
-      "/auth/login",
-      {
-        username: username,
-        password: password,
-        role: urlSlug,
-        staySignedIn: staySignedIn,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
+  const getLoginData = useCallback(
+    async (data: FormData) => {
+      const urlSlug =
+        location.pathname.split("/") && location.pathname.split("/")[1]
+          ? location.pathname.split("/")[1]
+          : "admin";
+      const response = await axiosInstance.post<ApiResponse>(
+        "/auth/login",
+        {
+          username: data.username,
+          password: data.password,
+          role: urlSlug,
+          staySignedIn: data?.staySignedIn || false,
         },
-      }
-    );
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-    if (response.data.data) {
-      const refreshTok = response.data.auth?.refreshToken;
-      const accessTok = response.data.auth?.accessToken;
-      const userData = response.data.auth?.user;
-      if (
-        response.data.success &&
-        refreshTok &&
-        accessTok &&
-        response.data.auth.authenticated &&
-        userData
-      ) {
-        setUser(userData);
-        setAccessToken(accessTok);
-        setIsAuth(true);
+      if (response.data.data) {
+        const refreshTok = response.data.auth?.refreshToken;
+        const accessTok = response.data.auth?.accessToken;
+        const userData = response.data.auth?.user;
+        if (
+          response.data.success &&
+          refreshTok &&
+          accessTok &&
+          response.data.auth.authenticated &&
+          userData
+        ) {
+          setUser(userData);
+          setAccessToken(accessTok);
+          setIsAuth(true);
+        }
       }
-    }
-  }, [
-    username,
-    password,
-    location,
-    axiosInstance,
-    staySignedIn,
-    setAccessToken,
-    setIsAuth,
-    setUser,
-  ]);
+      if (response.data.error) {
+        setAlertMessage(response.data.error.message);
+      }
+    },
+    [location, axiosInstance, setAccessToken, setIsAuth, setUser]
+  );
+
+  const handleClickShowPassword = () => {
+    setShowPassword((prev) => !prev);
+  };
+
+  function handleMouseDownPassword(
+    event: React.MouseEvent<HTMLButtonElement>
+  ): void {
+    event.preventDefault();
+  }
 
   return (
     <LandingWrapper>
@@ -120,39 +142,68 @@ const Login = () => {
           <Box
             component="form"
             noValidate
-            onSubmit={handleSubmit}
+            onSubmit={handleSubmit(onSubmit)}
             sx={{ mt: 1 }}
           >
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="username"
-              label="Username"
+            <Controller
               name="username"
-              onChange={(e) => setUserName(e.target.value)}
-              autoFocus
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  name="staySignedIn"
-                  id="staySignedIn"
-                  onChange={(e) => setStaySignedIn(e.currentTarget.checked)}
-                  color="primary"
+              control={control}
+              defaultValue=""
+              render={({ field, fieldState }) => (
+                <TextField
+                  {...field}
+                  label="Username"
+                  error={!!fieldState.error}
+                  helperText={
+                    fieldState.error ? fieldState.error.message : null
+                  }
+                  margin="normal"
+                  fullWidth
                 />
-              }
-              label="Stay signed in"
+              )}
+            />
+            <Controller
+              name="password"
+              control={control}
+              defaultValue=""
+              render={({ field, fieldState }) => (
+                <TextField
+                  {...field}
+                  label="Password"
+                  type={showPassword ? "text" : "password"}
+                  error={!!fieldState.error}
+                  helperText={
+                    fieldState.error ? fieldState.error.message : null
+                  }
+                  margin="normal"
+                  fullWidth
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                          edge="end"
+                        >
+                          {showPassword ? <Visibility /> : <VisibilityOff />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              )}
+            />
+            <label>Stay signed in</label>
+            <Controller
+              name="staySignedIn"
+              control={control}
+              render={({ field }) => (
+                <Checkbox
+                  onChange={(e) => field.onChange(e.target.checked)}
+                  checked={field.value}
+                />
+              )}
             />
             <Button
               type="submit"
@@ -162,14 +213,14 @@ const Login = () => {
             >
               Sign In
             </Button>
+            {alertMessage && (
+              <Alert sx={{ mt: 1, mb: 1 }} severity="error">
+                {alertMessage}
+              </Alert>
+            )}
             <Grid container>
-              <Grid item xs>
-                <Link href="#" variant="body2">
-                  Forgot password?
-                </Link>
-              </Grid>
               <Grid item>
-                <Link href="#" variant="body2">
+                <Link href="/register" variant="body2">
                   {"Don't have an account? Sign Up"}
                 </Link>
               </Grid>

@@ -29,6 +29,7 @@ class AuthController {
     const auth = await authenticateUser(username, password, expiryTime, role);
 
     if (!auth || !auth.user || !auth.refreshToken || !auth.accessToken) {
+      console.log("Auth Error:", auth);
       return sendErrorResponse(req, res, 401, errorMessage);
     }
 

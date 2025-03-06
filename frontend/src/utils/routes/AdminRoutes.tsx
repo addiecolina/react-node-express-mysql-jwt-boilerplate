@@ -2,7 +2,7 @@ import { useRoutes } from "react-router-dom";
 import ProtectedRoutes from "../../components/ProtectedRoutes";
 import LoginPage from "../../pages/login/LoginPage";
 import Dashboard from "../../components/admin/dashboard/Dashboard";
-import PanelLayout from "../../layouts/PanelLayout";
+// import PanelLayout from "../../layouts/PanelLayout";
 import PageNotFound from "../../components/PageNotFound";
 import HeaderLayout from "../../layouts/HeaderLayout";
 import { ThemeProvider } from "@emotion/react";
@@ -26,7 +26,7 @@ const AdminRoutes = () => {
               },
               {
                 path: "/",
-                element: <PanelLayout />,
+                // element: <PanelLayout />,
                 children: [
                   { index: true, element: <Dashboard /> },
                   { path: "admin", element: <Dashboard /> },

@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { TextField, Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { TextField, Button, Alert } from "@mui/material";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { ApiResponse } from "../../../types/ApiResponse";
@@ -12,16 +13,38 @@ import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import LandingWrapper from "../shared/LandingWrapper";
 import Copyright from "../shared/Copyright";
-import bcrypt from "bcryptjs";
+import { InputAdornment, IconButton } from "@mui/material";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
-const schema = z.object({
-  username: z.string().regex(/^[a-zA-Z0-9 !#()_-]+$/, "Invalid username"),
-  password: z.string().min(6, "Password must be at least 6 characters long"),
-});
+const schema = z
+  .object({
+    username: z.string(),
+    password: z
+      .string()
+      .regex(/[a-zA-Z]/, "Password must contain at least one letter")
+      .regex(/[0-9]/, "Password must contain at least one number")
+      .regex(
+        /[^a-zA-Z0-9]/,
+        "Password must contain at least one special character"
+      )
+      .regex(
+        /^[a-zA-Z0-9 !#()_-]+$/,
+        "Password can only contain alphanumeric characters and special characters !#()_-."
+      )
+      .min(6, "Password must be at least 6 characters long"),
+  })
+  .refine((data) => data.username !== data.password, {
+    message: "Username and password should not be equal",
+    path: ["password"],
+  });
 
 type FormData = z.infer<typeof schema>;
 
 const Register: React.FC = () => {
+  const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [alertMessage, setAlertMessage] = useState<string>("");
   const createAxiosInstance = useCallback(() => {
     const axiosInstance = axios.create({
       baseURL: import.meta.env.VITE_API_PUBLIC_URL,
@@ -56,19 +79,29 @@ const Register: React.FC = () => {
         }
       );
 
-      if (response.data.data) {
-        console.log(response.data.data);
+      if (response.data.success) {
+        navigate("/admin/login");
+      }
+      if (response.data.error) {
+        setAlertMessage(response.data.error.message);
       }
     },
     []
   );
 
   const onSubmit = async (data: FormData) => {
-    const hashedPassword = await bcrypt.hash(data.password, 10);
-    const modifiedData = { ...data, password: hashedPassword };
-    createUser(modifiedData);
-    console.log(modifiedData);
+    createUser(data);
   };
+
+  const handleClickShowPassword = () => {
+    setShowPassword((prev) => !prev);
+  };
+
+  function handleMouseDownPassword(
+    event: React.MouseEvent<HTMLButtonElement>
+  ): void {
+    event.preventDefault();
+  }
 
   return (
     <LandingWrapper>
@@ -123,6 +156,20 @@ const Register: React.FC = () => {
                   }
                   margin="normal"
                   fullWidth
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                          edge="end"
+                        >
+                          {showPassword ? <Visibility /> : <VisibilityOff />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
                 />
               )}
             />
@@ -134,6 +181,11 @@ const Register: React.FC = () => {
             >
               Create Account
             </Button>
+            {alertMessage && (
+              <Alert sx={{ mt: 1, mb: 1 }} severity="error">
+                {alertMessage}
+              </Alert>
+            )}
             <Copyright sx={{ mt: 5 }} />
           </Box>
         </Box>

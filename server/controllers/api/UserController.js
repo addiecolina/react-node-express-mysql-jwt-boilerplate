@@ -1,5 +1,6 @@
 import { sendErrorResponse, sendSuccessResponse } from "../../utils/globals.js";
 import { createUser } from "../../models/CreateUserModel.js";
+import { checkUserExists } from "../../services/checkUserService.js";
 
 class UserController {
   async createUser(req, res) {
@@ -10,12 +11,14 @@ class UserController {
       return sendErrorResponse(req, res, 401, errorMessage);
     }
 
-    const user = await createUser(username, password);
-
-    // if (!user) {
-    //   return sendErrorResponse(req, res, 401, errorMessage);
-    // }
-    return sendSuccessResponse(req, res, "Successfully created user!", user);
+    try {
+      console.log("Checking user exists:", username);
+      await checkUserExists(username, false);
+      const user = await createUser(username, password);
+      return sendSuccessResponse(req, res, "Successfully created user!", user);
+    } catch {
+      return sendErrorResponse(req, res, 401, "User already exists!");
+    }
   }
 }
 
