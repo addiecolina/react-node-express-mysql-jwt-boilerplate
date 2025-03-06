@@ -4,7 +4,7 @@ import { useAuthContext } from "../utils/hooks/useCustomContext";
 import { useVerifyToken } from "../utils/hooks/useVerifyToken";
 import { useEffect } from "react";
 
-const ProtectedRoutes = ({ children }: { children: any }) => {
+const ProtectedRoutes = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuth, user } = useAuthContext();

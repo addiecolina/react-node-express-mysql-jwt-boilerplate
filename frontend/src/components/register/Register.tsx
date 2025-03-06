@@ -19,7 +19,9 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 const schema = z
   .object({
-    username: z.string(),
+    username: z.string({
+      required_error: "Username is required",
+    }),
     password: z
       .string()
       .regex(/[a-zA-Z]/, "Password must contain at least one letter")

@@ -5,27 +5,37 @@ import { createTheme } from "@mui/material/styles";
 import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
 import EditIcon from "@mui/icons-material/Edit";
+import { useTodo } from "../../api/todo/todoAll";
 
 const muiCache = createCache({
   key: "mui-datatables",
   prepend: true,
 });
 
-const Table: React.FC = () => {
+interface TableProps {
+  id: string;
+}
+
+const Table: React.FC<TableProps> = (props: TableProps) => {
+  const todo = useTodo(props.id);
+  console.log(todo);
   const columns = [
     { name: "Title", options: { filter: false } },
     { name: "Task", options: { filter: false } },
     { name: "Priority", options: { filterOptions: { fullWidth: true } } },
     { name: "Current State", options: { filterOptions: { fullWidth: true } } },
     {
-      name: "Edit",
+      name: "",
       options: {
         filter: false,
         sort: false,
         empty: true,
         customBodyRenderLite: (dataIndex: number, rowIndex: number) => {
           return (
-            <EditIcon onClick={() => console.log("foo", dataIndex, rowIndex)} />
+            <EditIcon
+              sx={{ cursor: "pointer" }}
+              onClick={() => console.log("foo", dataIndex, rowIndex)}
+            />
           );
         },
       },

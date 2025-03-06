@@ -17,6 +17,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Table from "../../shared/Table";
 import { useLogout } from "../../../utils/hooks/useLogout";
+import { useAuthContext } from "../../../utils/hooks/useCustomContext";
 
 const drawerWidth = 240;
 
@@ -28,6 +29,7 @@ export default function Dashboard(props: Props) {
   const { window } = props;
   const logout = useLogout();
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const { user } = useAuthContext();
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -126,7 +128,7 @@ export default function Dashboard(props: Props) {
         }}
       >
         <Toolbar />
-        <Table />
+        {user?.name && <Table id={user.name} />}
       </Box>
     </Box>
   );

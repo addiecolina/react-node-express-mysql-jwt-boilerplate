@@ -62,7 +62,7 @@ const Login = () => {
     if (isAuth && user) {
       navigate(urlSlug, { replace: true });
     } else {
-      /* verifyToken(); */
+      verifyToken();
     }
   }, [urlSlug, navigate, isAuth, user, verifyToken]);
 
