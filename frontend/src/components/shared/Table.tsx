@@ -6,6 +6,7 @@ import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
 import EditIcon from "@mui/icons-material/Edit";
 import { useTodo } from "../../api/todo/todoAll";
+import { Typography } from "@mui/material";
 
 const muiCache = createCache({
   key: "mui-datatables",
@@ -16,14 +17,100 @@ interface TableProps {
   id: string;
 }
 
+interface TodoItem {
+  title: string;
+  due_at: string;
+  priority: string;
+  status: string;
+}
+
 const Table: React.FC<TableProps> = (props: TableProps) => {
   const todo = useTodo(props.id);
-  console.log(todo);
+
+  const mappedTodo = todo.data?.data?.map((item: TodoItem) => ({
+    title: item.title,
+    dueDate: new Date(item.due_at).toLocaleString(),
+    priority: item.priority.toString(),
+    status: item.status.toString(),
+  }));
+
   const columns = [
-    { name: "Title", options: { filter: false } },
-    { name: "Task", options: { filter: false } },
-    { name: "Priority", options: { filterOptions: { fullWidth: true } } },
-    { name: "Current State", options: { filterOptions: { fullWidth: true } } },
+    { name: "title", label: "Title", options: { filter: false } },
+    { name: "dueDate", label: "Due Date", options: { filter: false } },
+    {
+      name: "priority",
+      label: "Priority",
+      options: {
+        filterOptions: { fullWidth: true },
+        customBodyRenderLite: (dataIndex: number) => {
+          const getPriorityIcon = (priority: string) => {
+            switch (priority) {
+              case "1":
+                return <img src="/images/critical.svg" alt="High Priority" />;
+              case "2":
+                return <img src="/images/high.svg" alt="High Priority" />;
+              case "3":
+                return <img src="/images/low.svg" alt="High Priority" />;
+              default:
+                return null;
+            }
+          };
+          return getPriorityIcon(mappedTodo[dataIndex].priority);
+        },
+      },
+    },
+    {
+      name: "status",
+      label: "Current Status",
+      options: {
+        filterOptions: { fullWidth: true },
+        customBodyRenderLite: (dataIndex: number) => {
+          const getPriorityIcon = (priority: string) => {
+            switch (priority) {
+              case "1":
+                return (
+                  <>
+                    <img src="/images/complete.svg" alt="Completed" />
+                    <Typography
+                      component="span"
+                      sx={{
+                        marginLeft: 1,
+                        fontFamily: "inherit",
+                        fontSize: 14,
+                      }}
+                    >
+                      Completed
+                    </Typography>
+                  </>
+                );
+              case "2":
+                return <img src="/images/in-progress.svg" alt="In Progress" />;
+              case "3":
+                return (
+                  <>
+                    <img src="/images/not-started.svg" alt="Not Started" />
+                    <Typography
+                      component="span"
+                      sx={{
+                        marginLeft: 1,
+                        fontFamily: "inherit",
+                        fontSize: 14,
+                      }}
+                    >
+                      Not Started
+                    </Typography>
+                  </>
+                );
+              case "4":
+                return <img src="/images/cancelled.svg" alt="Cancelled" />;
+              default:
+                return null;
+            }
+          };
+          return getPriorityIcon(mappedTodo[dataIndex].status);
+        },
+      },
+    },
     {
       name: "",
       options: {
@@ -47,19 +134,12 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
     responsive: "vertical",
   };
 
-  const data = [
-    ["Task 1", "First Task", "Critical", "Completed"],
-    ["Task 2", "Second Task", "High", "Pending"],
-    ["Task 3", "Third Task", "Medium", "Completed"],
-    ["Task 4", "Fourth Task", "Low", "In-Progress"],
-  ];
-
   return (
     <CacheProvider value={muiCache}>
       <ThemeProvider theme={createTheme()}>
         <MUIDataTable
           title={""}
-          data={data}
+          data={mappedTodo}
           columns={columns}
           options={options}
         />

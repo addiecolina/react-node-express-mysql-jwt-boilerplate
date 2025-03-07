@@ -14,7 +14,7 @@ export const getTodoById = async (user_id) => {
       return null;
     }
 
-    return rows[0];
+    return rows;
   } catch (error) {
     return null;
   }

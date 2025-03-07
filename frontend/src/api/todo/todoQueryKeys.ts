@@ -6,6 +6,4 @@ export const todoQueryKeys = {
   all: ['todo'],
   details: () => [...todoQueryKeys.all, 'detail'],
   detail: (id: string) => [...todoQueryKeys.details(), id],
-//   pagination: (page: number) => [...userQueryKeys.all, 'pagination', page],
-//   infinite: () => [...userQueryKeys.all, 'infinite'],
 };
