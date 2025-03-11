@@ -1,3 +1,4 @@
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 import * as React from "react";
 import MUIDataTable, { MUIDataTableOptions } from "mui-datatables";
 import { ThemeProvider } from "@mui/material/styles";
@@ -6,7 +7,7 @@ import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
 import EditIcon from "@mui/icons-material/Edit";
 import { useTodo } from "../../api/todo/todoAll";
-import { Typography } from "@mui/material";
+import { Link, Typography } from "@mui/material";
 
 const muiCache = createCache({
   key: "mui-datatables",
@@ -28,14 +29,27 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
   const todo = useTodo(props.id);
 
   const mappedTodo = todo.data?.data?.map((item: TodoItem) => ({
+    ...item,
     title: item.title,
     dueDate: new Date(item.due_at).toLocaleString(),
     priority: item.priority.toString(),
     status: item.status.toString(),
   }));
 
+  console.log(mappedTodo);
+
   const columns = [
-    { name: "title", label: "Title", options: { filter: false } },
+    {
+      name: "title",
+      label: "Title",
+      options: {
+        filter: false,
+        customBodyRender: (value: any, tableMeta: any) => {
+          console.log("tablemeta", tableMeta?.tableData);
+          return <Link>{value}</Link>;
+        },
+      },
+    },
     { name: "dueDate", label: "Due Date", options: { filter: false } },
     {
       name: "priority",

@@ -82,7 +82,7 @@ const Register: React.FC = () => {
       );
 
       if (response.data.success) {
-        navigate("/admin/login");
+        navigate("/", { replace: true });
       }
       if (response.data.error) {
         setAlertMessage(response.data.error.message);

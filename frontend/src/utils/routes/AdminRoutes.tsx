@@ -1,14 +1,14 @@
 import { useRoutes } from "react-router-dom";
 import ProtectedRoutes from "../../components/ProtectedRoutes";
-import LoginPage from "../../pages/login/LoginPage";
+// import LoginPage from "../../pages/login/LoginPage";
 import Dashboard from "../../components/admin/dashboard/Dashboard";
 // import PanelLayout from "../../layouts/PanelLayout";
 import PageNotFound from "../../components/PageNotFound";
-import HeaderLayout from "../../layouts/HeaderLayout";
+// import HeaderLayout from "../../layouts/HeaderLayout";
 import { ThemeProvider } from "@emotion/react";
 import theme from "../../theme";
 import { CssBaseline } from "@mui/material";
-import "@fontsource/public-sans";
+import "@fontsource/roboto";
 
 const AdminRoutes = () => {
   const routes = useRoutes([
@@ -19,14 +19,13 @@ const AdminRoutes = () => {
           <CssBaseline />
           <ProtectedRoutes>
             {useRoutes([
-              {
-                path: "login",
-                element: <HeaderLayout />,
-                children: [{ index: true, element: <LoginPage /> }],
-              },
+              // {
+              //   path: "login",
+              //   element: <HeaderLayout />,
+              //   children: [{ index: true, element: <LoginPage /> }],
+              // },
               {
                 path: "/",
-                // element: <PanelLayout />,
                 children: [
                   { index: true, element: <Dashboard /> },
                   { path: "admin", element: <Dashboard /> },

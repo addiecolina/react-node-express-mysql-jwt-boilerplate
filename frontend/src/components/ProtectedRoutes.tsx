@@ -13,6 +13,7 @@ const ProtectedRoutes = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     if (!isAuth || !user) {
+      console.log("ProtectedRoutes: user not authenticated");
       verifyToken();
     } else {
       if (user.roleValue) {

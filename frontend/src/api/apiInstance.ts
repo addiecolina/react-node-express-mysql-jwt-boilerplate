@@ -2,6 +2,11 @@ import axios from 'axios';
 
 export const apiInstance = axios.create({
   baseURL: `${import.meta.env.VITE_API_PUBLIC_URL}`,
+  timeout: 1000,
+  withCredentials: true,
+  validateStatus: function (status) {
+    return status >= 200 && status < 600;
+  },  
 });
 
 export const API_METHODS = {

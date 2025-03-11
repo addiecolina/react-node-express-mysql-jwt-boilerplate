@@ -62,6 +62,7 @@ const Login = () => {
     if (isAuth && user) {
       navigate(urlSlug, { replace: true });
     } else {
+      console.log("Login: user not authenticated");
       verifyToken();
     }
   }, [urlSlug, navigate, isAuth, user, verifyToken]);
