@@ -15,7 +15,7 @@ const LandingWrapper = ({ children }: { children: React.ReactNode }) => {
           sm={4}
           md={7}
           sx={{
-            backgroundImage: "url(https://source.unsplash.com/random)",
+            backgroundImage: "url(http://localhost:5173/images/wallpaper.svg)",
             backgroundRepeat: "no-repeat",
             backgroundColor: (t) =>
               t.palette.mode === "light"

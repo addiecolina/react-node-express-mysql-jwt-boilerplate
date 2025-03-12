@@ -8,6 +8,7 @@ const routes: Routes = {
   "/register": "Register",
   "/admin": "Dashboard | Admin panel",
   "/admin/login": "Login | Admin panel",
+  "/admin/details": "Details | Admin panel",
   "/employee": "Dashboard | Employee panel",
   "/employee/login": "Login | Employee panel",
 };

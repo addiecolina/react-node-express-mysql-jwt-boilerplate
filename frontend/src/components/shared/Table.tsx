@@ -8,6 +8,7 @@ import createCache from "@emotion/cache";
 import EditIcon from "@mui/icons-material/Edit";
 import { useTodo } from "../../api/todo/todoAll";
 import { Link, Typography } from "@mui/material";
+import { Link as RouterLink } from "react-router-dom";
 
 const muiCache = createCache({
   key: "mui-datatables",
@@ -36,8 +37,6 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
     status: item.status.toString(),
   }));
 
-  console.log(mappedTodo);
-
   const columns = [
     {
       name: "title",
@@ -46,7 +45,15 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
         filter: false,
         customBodyRender: (value: any, tableMeta: any) => {
           console.log("tablemeta", tableMeta?.tableData);
-          return <Link>{value}</Link>;
+          return (
+            <Link
+              component={RouterLink}
+              to="/admin/details"
+              state={{ mode: "view", data: tableMeta?.tableData }}
+            >
+              {value}
+            </Link>
+          );
         },
       },
     },

@@ -1,156 +1,155 @@
-/* eslint-disable  @typescript-eslint/no-explicit-any */
-import React, { useEffect } from "react";
-import { useForm, Controller } from "react-hook-form";
-import {
-  TextField,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Button,
-} from "@mui/material";
-import { DatePicker } from "@mui/x-date-pickers";
-import axios from "axios";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import * as React from "react";
+import AppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
+import CssBaseline from "@mui/material/CssBaseline";
+import Divider from "@mui/material/Divider";
+import Drawer from "@mui/material/Drawer";
+import IconButton from "@mui/material/IconButton";
+import InboxIcon from "@mui/icons-material/MoveToInbox";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import MailIcon from "@mui/icons-material/Mail";
+import MenuIcon from "@mui/icons-material/Menu";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import Table from "../../shared/Table";
+import { useLogout } from "../../../utils/hooks/useLogout";
+import { useAuthContext } from "../../../utils/hooks/useCustomContext";
+import { TodoFormData } from "../../../../types/Todo";
+import TodoForm from "../../shared/TodoForm";
 
-interface FormData {
-  title: string;
-  created: Date | null;
-  due: Date | null;
-  status: string;
-  priority: string;
+const drawerWidth = 240;
+
+interface Props {
+  window?: () => Window;
+  mode?: "view" | "edit";
+  data?: TodoFormData;
 }
 
-const Details: React.FC<{ mode: "view" | "edit" }> = ({ mode }) => {
-  const { control, handleSubmit, setValue } = useForm<FormData>({
-    defaultValues: {
-      title: "",
-      created: null,
-      due: null,
-      status: "",
-      priority: "",
-    },
-  });
-
-  useEffect(() => {
-    // Fetch default values from API
-    axios
-      .get("/api/details")
-      .then((response) => {
-        const { title, created, due, status, priority } = response.data;
-        setValue("title", title);
-        setValue("created", new Date(created));
-        setValue("due", new Date(due));
-        setValue("status", status);
-        setValue("priority", priority);
-      })
-      .catch((error) => {
-        console.error("Error fetching details:", error);
-      });
-  }, [setValue]);
-
-  const onSubmit = (data: FormData) => {
-    console.log(data);
-  };
-
-  return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Controller
-        name="title"
-        control={control}
-        render={({ field }) => (
-          <TextField
-            {...field}
-            label="Title"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            disabled={mode === "view"}
-          />
-        )}
-      />
-      <Controller
-        name="created"
-        control={control}
-        render={({ field }) => (
-          <DatePicker
-            {...field}
-            label="Created"
-            // renderInput={(params: any) => (
-            //   <TextField
-            //     {...params}
-            //     variant="outlined"
-            //     fullWidth
-            //     margin="normal"
-            //     disabled={mode === "view"}
-            //   />
-            // )}
-          />
-        )}
-      />
-      <Controller
-        name="due"
-        control={control}
-        render={({ field }) => (
-          <DatePicker
-            {...field}
-            label="Due"
-            // renderInput={(params) => (
-            //   <TextField
-            //     {...params}
-            //     variant="outlined"
-            //     fullWidth
-            //     margin="normal"
-            //     disabled={mode === "view"}
-            //   />
-            // )}
-          />
-        )}
-      />
-      <Controller
-        name="status"
-        control={control}
-        render={({ field }) => (
-          <FormControl
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            disabled={mode === "view"}
-          >
-            <InputLabel>Status</InputLabel>
-            <Select {...field} label="Status">
-              <MenuItem value="pending">Pending</MenuItem>
-              <MenuItem value="in-progress">In Progress</MenuItem>
-              <MenuItem value="completed">Completed</MenuItem>
-            </Select>
-          </FormControl>
-        )}
-      />
-      <Controller
-        name="priority"
-        control={control}
-        render={({ field }) => (
-          <FormControl
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            disabled={mode === "view"}
-          >
-            <InputLabel>Priority</InputLabel>
-            <Select {...field} label="Priority">
-              <MenuItem value="low">Low</MenuItem>
-              <MenuItem value="medium">Medium</MenuItem>
-              <MenuItem value="high">High</MenuItem>
-            </Select>
-          </FormControl>
-        )}
-      />
-      {mode === "edit" && (
-        <Button type="submit" variant="contained" color="primary">
-          Save
-        </Button>
-      )}
-    </form>
-  );
+const defaultValues = {
+  created_at: new Date(),
+  description: "",
+  due_at: new Date(),
+  id: 0,
+  priority: "",
+  slug: "",
+  status: "",
+  title: "",
+  user_id: "",
 };
 
-export default Details;
+export default function Details(props: Props) {
+  const { window } = props;
+  const logout = useLogout();
+  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const { user } = useAuthContext();
+
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
+
+  const drawer = (
+    <div>
+      <Toolbar />
+      <Divider />
+      <List>
+        {["Logout"].map((text, index) => (
+          <ListItem key={text} onClick={logout} disablePadding>
+            <ListItemButton>
+              <ListItemIcon>
+                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+              </ListItemIcon>
+              <ListItemText primary={text} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
+    </div>
+  );
+
+  const container =
+    window !== undefined ? () => window().document.body : undefined;
+
+  return (
+    <Box sx={{ display: "flex" }}>
+      <CssBaseline />
+      <AppBar
+        position="fixed"
+        sx={{
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+        }}
+      >
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            edge="start"
+            onClick={handleDrawerToggle}
+            sx={{ mr: 2, display: { md: "none" } }}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" noWrap component="div">
+            Responsive drawer
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <Box
+        component="nav"
+        sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}
+        aria-label="mailbox folders"
+      >
+        {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
+        <Drawer
+          container={container}
+          variant="temporary"
+          open={mobileOpen}
+          onClose={handleDrawerToggle}
+          ModalProps={{
+            keepMounted: true, // Better open performance on mobile.
+          }}
+          sx={{
+            display: { xs: "block", sm: "block", md: "none" },
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
+              width: drawerWidth,
+            },
+          }}
+        >
+          {drawer}
+        </Drawer>
+        <Drawer
+          variant="permanent"
+          sx={{
+            display: { xs: "none", sm: "none", md: "block" },
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
+              width: drawerWidth,
+            },
+          }}
+          open
+        >
+          {drawer}
+        </Drawer>
+      </Box>
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: 3,
+          width: { md: `calc(100% - ${drawerWidth}px)` },
+        }}
+      >
+        <Toolbar />
+        <TodoForm
+          mode={props.mode ?? "view"}
+          data={props.data ?? defaultValues}
+        />
+      </Box>
+    </Box>
+  );
+}

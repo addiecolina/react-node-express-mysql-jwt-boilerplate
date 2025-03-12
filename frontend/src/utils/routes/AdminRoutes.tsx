@@ -8,6 +8,7 @@ import PageNotFound from "../../components/PageNotFound";
 import { ThemeProvider } from "@emotion/react";
 import theme from "../../theme";
 import { CssBaseline } from "@mui/material";
+import Details from "../../components/admin/dashboard/Details";
 import "@fontsource/roboto";
 
 const AdminRoutes = () => {
@@ -29,6 +30,7 @@ const AdminRoutes = () => {
                 children: [
                   { index: true, element: <Dashboard /> },
                   { path: "admin", element: <Dashboard /> },
+                  { path: "details", element: <Details /> },
                 ],
               },
               { path: "*", element: <PageNotFound /> },
