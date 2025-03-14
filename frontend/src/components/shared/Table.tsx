@@ -9,6 +9,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import { useTodo } from "../../api/todo/todoAll";
 import { Link, Typography } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
+import dayjs from "dayjs";
 
 const muiCache = createCache({
   key: "mui-datatables",
@@ -32,7 +33,7 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
   const mappedTodo = todo.data?.data?.map((item: TodoItem) => ({
     ...item,
     title: item.title,
-    dueDate: new Date(item.due_at).toLocaleString(),
+    dueDate: dayjs(item.due_at).format("MM/DD/YYYY"),
     priority: item.priority.toString(),
     status: item.status.toString(),
   }));
@@ -43,15 +44,14 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
       label: "Title",
       options: {
         filter: false,
-        customBodyRender: (value: any, tableMeta: any) => {
-          console.log("tablemeta", tableMeta?.tableData);
+        customBodyRenderLite: (dataIndex: number) => {
           return (
             <Link
               component={RouterLink}
               to="/admin/details"
-              state={{ mode: "view", data: tableMeta?.tableData }}
+              state={{ mode: "view", data: mappedTodo[dataIndex] }}
             >
-              {value}
+              {mappedTodo[dataIndex].title}
             </Link>
           );
         },

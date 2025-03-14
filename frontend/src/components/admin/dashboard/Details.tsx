@@ -26,8 +26,6 @@ const drawerWidth = 240;
 
 interface Props {
   window?: () => Window;
-  mode?: "view" | "edit";
-  data?: TodoFormData;
 }
 
 const defaultValues = {
@@ -47,6 +45,8 @@ export default function Details(props: Props) {
   const logout = useLogout();
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const { user } = useAuthContext();
+
+  console.log("data", props);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -145,10 +145,7 @@ export default function Details(props: Props) {
         }}
       >
         <Toolbar />
-        <TodoForm
-          mode={props.mode ?? "view"}
-          data={props.data ?? defaultValues}
-        />
+        <TodoForm />
       </Box>
     </Box>
   );
