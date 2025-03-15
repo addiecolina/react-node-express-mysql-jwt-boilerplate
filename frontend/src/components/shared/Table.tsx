@@ -67,11 +67,13 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
           const getPriorityIcon = (priority: string) => {
             switch (priority) {
               case "1":
-                return <img src="/images/critical.svg" alt="High Priority" />;
+                return (
+                  <img src="/images/critical.svg" alt="Critical Priority" />
+                );
               case "2":
                 return <img src="/images/high.svg" alt="High Priority" />;
               case "3":
-                return <img src="/images/low.svg" alt="High Priority" />;
+                return <img src="/images/low.svg" alt="Low Priority" />;
               default:
                 return null;
             }
@@ -138,12 +140,15 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
         filter: false,
         sort: false,
         empty: true,
-        customBodyRenderLite: (dataIndex: number, rowIndex: number) => {
+        customBodyRenderLite: (dataIndex: number) => {
           return (
-            <EditIcon
-              sx={{ cursor: "pointer" }}
-              onClick={() => console.log("foo", dataIndex, rowIndex)}
-            />
+            <Link
+              component={RouterLink}
+              to="/admin/details"
+              state={{ mode: "edit", data: mappedTodo[dataIndex] }}
+            >
+              <EditIcon />
+            </Link>
           );
         },
       },

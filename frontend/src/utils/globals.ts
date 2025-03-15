@@ -1,3 +1,29 @@
+export const convertPriority = (value: number): string | null => {
+  switch (value) {
+    case 1:
+      return "Critical";
+    case 2:
+      return "High";
+    case 3:
+      return "Low";
+    default:
+      return null;
+  }
+};
+
+export const convertStatus = (value: number): string | null => {
+  switch (value) {
+    case 1:
+      return "Completed";
+    case 2:
+      return "In Progress";
+    case 3:
+      return "Not Started";
+    default:
+      return null;
+  }
+};
+
 export const convertToRoleData = (
   value: string | number,
   returnType?: string
