@@ -11,6 +11,5 @@ export function useTodo(id: string) {
   return useQuery({
     queryKey: todoQueryKeys.detail(id),
     queryFn: getUserFn,
-    retry: 1,
   });
 }

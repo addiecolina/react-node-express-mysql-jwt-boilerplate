@@ -4,6 +4,6 @@
 
 export const todoQueryKeys = {
   all: ['todo'],
-  details: () => [...todoQueryKeys.all, 'detail'],
+  details: () => [...todoQueryKeys.all, 'todo'],
   detail: (id: string) => [...todoQueryKeys.details(), id],
 };

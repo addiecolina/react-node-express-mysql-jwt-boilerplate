@@ -1,10 +1,9 @@
 import { Dayjs } from "dayjs";
 
 export interface TodoFormData {
-  created_at: Date | Dayjs | null;
+  created_at: Date | Dayjs | string;
   description: string;
-  due_at: Date | Dayjs | null;
-  id: number;
+  due_at: Date | Dayjs | string;
   priority: string;
   slug: string;
   status: string;
