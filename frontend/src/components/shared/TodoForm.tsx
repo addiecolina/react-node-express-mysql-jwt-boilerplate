@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable  @typescript-eslint/no-explicit-any */
 import { useForm, Controller } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
@@ -11,6 +9,7 @@ import {
   Button,
   Stack,
   Box,
+  FormHelperText,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs, { Dayjs } from "dayjs";
@@ -19,6 +18,9 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTodoUpdate } from "../../api/todo/todoUpdate";
+import { useTodoCreate } from "../../api/todo/todoCreate";
+import { useAuthContext } from "../../utils/hooks/useCustomContext";
+import { v4 as uuidv4 } from "uuid";
 
 const TodoFormSchema = z.object({
   status: z.enum(["1", "2", "3"]),
@@ -27,6 +29,7 @@ const TodoFormSchema = z.object({
   description: z.string().min(1, "Description is required"),
   due_at: z.instanceof(dayjs as unknown as typeof Dayjs),
   created_at: z.instanceof(dayjs as unknown as typeof Dayjs).optional(),
+  slug: z.string().optional(),
 });
 
 type TodoFormData = z.infer<typeof TodoFormSchema>;
@@ -35,18 +38,18 @@ const TodoForm = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const updateTodo = useTodoUpdate();
-  const mode = location.state?.mode || "view";
+  const createTodo = useTodoCreate();
+  const mode = location.state?.mode || "add";
   const data = location.state?.data || {};
+  const { user } = useAuthContext();
 
   if (updateTodo.isSuccess) {
     navigate("/admin");
   }
 
-  if (Object.keys(data).length === 0) {
+  if (mode !== "add" && Object.keys(data).length === 0) {
     navigate(-1);
   }
-
-  const { user_id, slug } = data;
 
   const { control, handleSubmit } = useForm<TodoFormData>({
     resolver: zodResolver(TodoFormSchema),
@@ -65,30 +68,32 @@ const TodoForm = () => {
       ...data,
       created_at: dayjs(data.created_at).format("YYYY-MM-DD HH:MM:ss"),
       due_at: dayjs(data.due_at).format("YYYY-MM-DD HH:MM:ss"),
-      user_id,
-      slug,
+      user_id: user?.name as string,
+      slug: mode === "add" ? uuidv4() : (data?.slug as string),
     };
-    updateTodo.mutate(formData);
+    if (mode === "add") {
+      createTodo.mutate(formData);
+    } else {
+      updateTodo.mutate(formData);
+    }
     console.log(formData);
   };
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Stack spacing={3}>
-        <Box>
-          <h1>{mode === "edit" ? "Edit" : "View"} Todo</h1>
-        </Box>
         <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)}>
           <Box sx={{ display: "flex", gap: 2 }}>
             <Controller
               name="status"
               control={control}
-              render={({ field: { onChange, value } }) => (
+              render={({ field: { onChange, value }, fieldState }) => (
                 <FormControl
                   variant="outlined"
                   margin="normal"
                   sx={{ minWidth: 230 }}
                   disabled={mode === "view"}
+                  error={!!fieldState.error}
                 >
                   <InputLabel>Status</InputLabel>
                   <Select onChange={onChange} label="Status" value={value}>
@@ -96,18 +101,22 @@ const TodoForm = () => {
                     <MenuItem value="2">In Progress</MenuItem>
                     <MenuItem value="3">Pending</MenuItem>
                   </Select>
+                  <FormHelperText>
+                    {fieldState.error ? fieldState.error.message : null}
+                  </FormHelperText>
                 </FormControl>
               )}
             />
             <Controller
               name="priority"
               control={control}
-              render={({ field: { onChange, value } }) => (
+              render={({ field: { onChange, value }, fieldState }) => (
                 <FormControl
                   variant="outlined"
                   margin="normal"
                   sx={{ minWidth: 230 }}
                   disabled={mode === "view"}
+                  error={!!fieldState.error}
                 >
                   <InputLabel>Priority</InputLabel>
                   <Select onChange={onChange} label="Priority" value={value}>
@@ -115,6 +124,9 @@ const TodoForm = () => {
                     <MenuItem value="2">Medium</MenuItem>
                     <MenuItem value="3">Low</MenuItem>
                   </Select>
+                  <FormHelperText>
+                    {fieldState.error ? fieldState.error.message : null}
+                  </FormHelperText>
                 </FormControl>
               )}
             />
@@ -122,7 +134,7 @@ const TodoForm = () => {
           <Controller
             name="title"
             control={control}
-            render={({ field: { onChange, value } }) => (
+            render={({ field: { onChange, value }, fieldState }) => (
               <TextField
                 onChange={onChange}
                 label="Title"
@@ -133,13 +145,15 @@ const TodoForm = () => {
                 multiline
                 rows={4}
                 value={value}
+                error={!!fieldState.error}
+                helperText={fieldState.error ? fieldState.error.message : null}
               />
             )}
           />
           <Controller
             name="description"
             control={control}
-            render={({ field: { onChange, value } }) => (
+            render={({ field: { onChange, value }, fieldState }) => (
               <TextField
                 onChange={onChange}
                 label="Description"
@@ -150,6 +164,8 @@ const TodoForm = () => {
                 multiline
                 rows={4}
                 value={value}
+                error={!!fieldState.error}
+                helperText={fieldState.error ? fieldState.error.message : null}
               />
             )}
           />
@@ -181,7 +197,7 @@ const TodoForm = () => {
               )}
             />
           </Box>
-          {mode === "edit" && (
+          {mode !== "view" && (
             <Button type="submit" variant="contained" color="primary">
               Save
             </Button>

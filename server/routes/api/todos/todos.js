@@ -12,6 +12,7 @@ router.use(
 );
 
 router.get("/getTodos/:id", todosController.getTodos);
+router.post("/createTodos", todosController.createTodos);
 router.put("/updateTodos", todosController.updateTodos);
 
 router.get("*", function (req, res) {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as React from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -18,6 +19,10 @@ import Typography from "@mui/material/Typography";
 import Table from "../../shared/Table";
 import { useLogout } from "../../../utils/hooks/useLogout";
 import { useAuthContext } from "../../../utils/hooks/useCustomContext";
+import Fab from "@mui/material/Fab";
+import Link from "@mui/material/Link";
+import AddIcon from "@mui/icons-material/Add";
+import { Link as RouterLink } from "react-router-dom";
 
 const drawerWidth = 240;
 
@@ -138,7 +143,34 @@ export default function Dashboard(props: Props) {
         }}
       >
         <Toolbar />
-        {user?.name && <Table id={user.name} />}
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            flexWrap: "wrap-reverse",
+            "& > :not(style)": {
+              m: 1,
+            },
+          }}
+        >
+          <Fab
+            color="primary"
+            aria-label="add"
+            variant="extended"
+            sx={{ maxWidth: "fit-content" }}
+          >
+            <Link
+              component={RouterLink}
+              to="/admin/details"
+              state={{ mode: "add" }}
+              sx={{ display: "contents", color: "white" }}
+            >
+              <span>New Todo</span>
+              <AddIcon />
+            </Link>
+          </Fab>
+          {user?.name && <Table id={user.name} />}
+        </Box>
       </Box>
     </Box>
   );

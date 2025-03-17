@@ -20,6 +20,45 @@ export const getTodoById = async (user_id) => {
   }
 };
 
+export const createTodo = async (
+  title,
+  description,
+  priority,
+  status,
+  user_id,
+  slug,
+  due_at
+) => {
+  if (
+    !title ||
+    !description ||
+    !priority ||
+    !status ||
+    !due_at ||
+    !slug ||
+    !user_id
+  ) {
+    return null;
+  }
+
+  const connection = pool.getConnection();
+  try {
+    const [rows] = await connection.then((establishedConnection) =>
+      establishedConnection.query(
+        "INSERT INTO todos (title, description, priority, status, user_id, slug, due_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        [title, description, priority, status, user_id, slug, due_at]
+      )
+    );
+    console.log("Record Created:", rows);
+    return true;
+  } catch (error) {
+    console.log(error);
+    return null;
+  } finally {
+    (await connection).release();
+  }
+};
+
 export const updateTodoById = async (
   title,
   description,
