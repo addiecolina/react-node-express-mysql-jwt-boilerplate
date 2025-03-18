@@ -1,4 +1,3 @@
-/* eslint-disable  @typescript-eslint/no-explicit-any */
 import * as React from "react";
 import MUIDataTable, { MUIDataTableOptions } from "mui-datatables";
 import { ThemeProvider } from "@mui/material/styles";
@@ -70,13 +69,13 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
         customBodyRenderLite: (dataIndex: number) => {
           const getPriorityIcon = (priority: string) => {
             switch (priority) {
-              case "1":
+              case "Critical":
                 return (
                   <img src="/images/critical.svg" alt="Critical Priority" />
                 );
-              case "2":
+              case "High":
                 return <img src="/images/high.svg" alt="High Priority" />;
-              case "3":
+              case "Low":
                 return <img src="/images/low.svg" alt="Low Priority" />;
               default:
                 return null;
@@ -94,7 +93,7 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
         customBodyRenderLite: (dataIndex: number) => {
           const getPriorityIcon = (priority: string) => {
             switch (priority) {
-              case "1":
+              case "Completed":
                 return (
                   <>
                     <img src="/images/complete.svg" alt="Completed" />
@@ -110,9 +109,9 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
                     </Typography>
                   </>
                 );
-              case "2":
+              case "In Progress":
                 return <img src="/images/in-progress.svg" alt="In Progress" />;
-              case "3":
+              case "Not Started":
                 return (
                   <>
                     <img src="/images/not-started.svg" alt="Not Started" />
@@ -128,8 +127,23 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
                     </Typography>
                   </>
                 );
-              case "4":
-                return <img src="/images/cancelled.svg" alt="Cancelled" />;
+              case "Cancelled":
+                return (
+                  <>
+                    <img src="/images/cancelled.svg" alt="Cancelled" />
+                    <Typography
+                      component="span"
+                      sx={{
+                        marginLeft: 1,
+                        fontFamily: "inherit",
+                        fontSize: 14,
+                      }}
+                    >
+                      Cancelled
+                    </Typography>
+                  </>
+                );
+
               default:
                 return null;
             }
@@ -162,24 +176,19 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
   const options: MUIDataTableOptions = {
     filterType: "dropdown",
     responsive: "vertical",
-    // onRowsDelete(data, newTableData) {
-    //   const foo = data.data[0].index;
-    //   console.log(data, newTableData, mappedTodo[foo]);
-    // },
-    // onRowSelectionChange(currentRowsSelected, allRowsSelected, rowsSelected) {
-    //   console.log(currentRowsSelected, allRowsSelected, rowsSelected);
-    // },
     onRowsDelete: (data) => {
+      const recordMap = data.data.map(
+        (record: { index: number }) => mappedTodo[record.index].slug
+      );
       dialog
-        .confirm("Are you sure")
+        .confirm(
+          `${recordMap.length} tasks will be deleted. Do you want to proceed?`
+        )
         .then(() => {
-          const recordMap = data.data.map(
-            (record: any) => mappedTodo[record.index].slug
-          );
           console.log(recordMap);
           deleteTodo.mutate(recordMap);
         })
-        .catch(() => console.log("clicked cancel"));
+        .catch(() => console.log("Cancelled Deletion!"));
     },
   };
 

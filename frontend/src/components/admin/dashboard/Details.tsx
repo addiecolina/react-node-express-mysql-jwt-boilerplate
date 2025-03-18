@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as React from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -16,12 +15,10 @@ import ListItemText from "@mui/material/ListItemText";
 import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import Table from "../../shared/Table";
 import { useLogout } from "../../../utils/hooks/useLogout";
-import { useAuthContext } from "../../../utils/hooks/useCustomContext";
-import { TodoFormData } from "../../../../types/Todo";
-import TodoForm from "../../shared/TodoForm";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import TodoForm from "../../todo/TodoForm";
+import TodoView from "../../todo/TodoView";
 
 const drawerWidth = 240;
 
@@ -29,24 +26,13 @@ interface Props {
   window?: () => Window;
 }
 
-const defaultValues = {
-  created_at: new Date(),
-  description: "",
-  due_at: new Date(),
-  id: 0,
-  priority: "",
-  slug: "",
-  status: "",
-  title: "",
-  user_id: "",
-};
-
 export default function Details(props: Props) {
   const { window } = props;
   const logout = useLogout();
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const navigate = useNavigate();
-  const { user } = useAuthContext();
+  const location = useLocation();
+  const mode = location.state?.mode || "view";
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -154,11 +140,12 @@ export default function Details(props: Props) {
         sx={{
           flexGrow: 1,
           p: 3,
-          width: { md: `calc(100% - ${drawerWidth}px)` },
+          width: { xs: "100%", md: `calc(100% - ${drawerWidth}px)` },
         }}
       >
         <Toolbar />
-        <TodoForm />
+        {mode === "view" && <TodoView />}
+        {mode !== "view" && <TodoForm />}
       </Box>
     </Box>
   );

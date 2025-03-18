@@ -16,13 +16,13 @@ import ListItemText from "@mui/material/ListItemText";
 import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import Table from "../../shared/Table";
 import { useLogout } from "../../../utils/hooks/useLogout";
 import { useAuthContext } from "../../../utils/hooks/useCustomContext";
 import Fab from "@mui/material/Fab";
 import Link from "@mui/material/Link";
 import AddIcon from "@mui/icons-material/Add";
 import { Link as RouterLink } from "react-router-dom";
+import Table from "../../todo/Table";
 
 const drawerWidth = 240;
 

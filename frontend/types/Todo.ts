@@ -9,4 +9,5 @@ export interface TodoFormData {
   status: string;
   title: string;
   user_id: string;
+  completed_at: Date | Dayjs | string | null;
 }

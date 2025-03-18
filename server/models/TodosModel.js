@@ -65,6 +65,7 @@ export const updateTodoById = async (
   priority,
   status,
   due_at,
+  completed_at,
   slug
 ) => {
   if (!title || !description || !priority || !status || !due_at || !slug) {
@@ -73,8 +74,8 @@ export const updateTodoById = async (
 
   try {
     const [rows] = await pool.query(
-      "UPDATE todos SET title = ?, description = ?, priority = ?, status = ?, due_at = ? WHERE slug = ?",
-      [title, description, priority, status, due_at, slug]
+      "UPDATE todos SET title = ?, description = ?, priority = ?, status = ?, due_at = ?, completed_at = ? WHERE slug = ?",
+      [title, description, priority, status, due_at, completed_at, slug]
     );
 
     if (Object.keys(rows).length === 0) {

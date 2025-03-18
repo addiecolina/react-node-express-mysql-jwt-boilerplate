@@ -6,7 +6,6 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
-  // Button,
   Stack,
   Box,
   FormHelperText,
@@ -18,21 +17,21 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useTodoUpdate } from "../../api/todo/todoUpdate";
-import { useTodoCreate } from "../../api/todo/todoCreate";
+import { useTodoCreate, useTodoUpdate } from "../../api";
 import { useAuthContext } from "../../utils/hooks/useCustomContext";
 import { v4 as uuidv4 } from "uuid";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 
 const TodoFormSchema = z.object({
-  status: z.enum(["1", "2", "3"]),
-  priority: z.enum(["1", "2", "3"]),
+  status: z.enum(["Not Started", "In Progress", "Cancelled", "Completed"]),
+  priority: z.enum(["Critical", "High", "Low"]),
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
   due_at: z.instanceof(dayjs as unknown as typeof Dayjs),
   created_at: z.instanceof(dayjs as unknown as typeof Dayjs).optional(),
   slug: z.string().optional(),
+  completed_at: z.instanceof(dayjs as unknown as typeof Dayjs).optional(),
 });
 
 type TodoFormData = z.infer<typeof TodoFormSchema>;
@@ -66,20 +65,20 @@ const TodoForm = () => {
     },
   });
 
-  const onSubmit = async (data: TodoFormData) => {
+  const onSubmit = async (form: TodoFormData) => {
     const formData = {
-      ...data,
+      ...form,
       created_at: dayjs(data.created_at).format("YYYY-MM-DD HH:MM:ss"),
       due_at: dayjs(data.due_at).format("YYYY-MM-DD HH:MM:ss"),
       user_id: user?.name as string,
       slug: mode === "add" ? uuidv4() : (data?.slug as string),
+      completed_at: null,
     };
     if (mode === "add") {
       createTodo.mutate(formData);
     } else {
       updateTodo.mutate(formData);
     }
-    console.log(formData);
   };
 
   return (
@@ -94,15 +93,16 @@ const TodoForm = () => {
                 <FormControl
                   variant="outlined"
                   margin="normal"
-                  sx={{ minWidth: 230 }}
+                  sx={{ minWidth: 185 }}
                   disabled={mode === "view"}
                   error={!!fieldState.error}
                 >
                   <InputLabel>Status</InputLabel>
                   <Select onChange={onChange} label="Status" value={value}>
-                    <MenuItem value="1">Completed</MenuItem>
-                    <MenuItem value="2">In Progress</MenuItem>
-                    <MenuItem value="3">Pending</MenuItem>
+                    <MenuItem value="Not Started">Not Started</MenuItem>
+                    <MenuItem value="In Progress">In Progress</MenuItem>
+                    <MenuItem value="Cancelled">Cancelled</MenuItem>
+                    <MenuItem value="Completed">Completed</MenuItem>
                   </Select>
                   <FormHelperText>
                     {fieldState.error ? fieldState.error.message : null}
@@ -117,15 +117,15 @@ const TodoForm = () => {
                 <FormControl
                   variant="outlined"
                   margin="normal"
-                  sx={{ minWidth: 230 }}
+                  sx={{ minWidth: 185 }}
                   disabled={mode === "view"}
                   error={!!fieldState.error}
                 >
                   <InputLabel>Priority</InputLabel>
                   <Select onChange={onChange} label="Priority" value={value}>
-                    <MenuItem value="1">High</MenuItem>
-                    <MenuItem value="2">Medium</MenuItem>
-                    <MenuItem value="3">Low</MenuItem>
+                    <MenuItem value="Critical">Critical</MenuItem>
+                    <MenuItem value="High">High</MenuItem>
+                    <MenuItem value="Low">Low</MenuItem>
                   </Select>
                   <FormHelperText>
                     {fieldState.error ? fieldState.error.message : null}
@@ -192,7 +192,6 @@ const TodoForm = () => {
                 <DatePicker
                   onChange={onChange}
                   label="Due At"
-                  // defaultValue={dayjs(data.due_at) as unknown as Dayjs}
                   value={dayjs(value) as Dayjs}
                   disablePast
                   disabled={mode === "view"}
