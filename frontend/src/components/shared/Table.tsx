@@ -10,6 +10,8 @@ import { useTodo } from "../../api/todo/todoAll";
 import { Link, Typography } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 import dayjs from "dayjs";
+import { useDialog } from "muibox";
+import { useTodoDelete } from "../../api/todo/todoDelete";
 
 const muiCache = createCache({
   key: "mui-datatables",
@@ -29,6 +31,8 @@ interface TodoItem {
 
 const Table: React.FC<TableProps> = (props: TableProps) => {
   const todo = useTodo(props.id);
+  const dialog = useDialog();
+  const deleteTodo = useTodoDelete();
 
   const mappedTodo = todo.data?.data?.map((item: TodoItem) => ({
     ...item,
@@ -158,6 +162,25 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
   const options: MUIDataTableOptions = {
     filterType: "dropdown",
     responsive: "vertical",
+    // onRowsDelete(data, newTableData) {
+    //   const foo = data.data[0].index;
+    //   console.log(data, newTableData, mappedTodo[foo]);
+    // },
+    // onRowSelectionChange(currentRowsSelected, allRowsSelected, rowsSelected) {
+    //   console.log(currentRowsSelected, allRowsSelected, rowsSelected);
+    // },
+    onRowsDelete: (data) => {
+      dialog
+        .confirm("Are you sure")
+        .then(() => {
+          const recordMap = data.data.map(
+            (record: any) => mappedTodo[record.index].slug
+          );
+          console.log(recordMap);
+          deleteTodo.mutate(recordMap);
+        })
+        .catch(() => console.log("clicked cancel"));
+    },
   };
 
   return (

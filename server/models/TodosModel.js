@@ -86,3 +86,20 @@ export const updateTodoById = async (
     return null;
   }
 };
+
+export const deleteTodosByIds = async (slugs) => {
+  if (!Array.isArray(slugs) || slugs.length === 0) {
+    return null;
+  }
+
+  try {
+    const [result] = await pool.query("DELETE FROM todos WHERE slug IN (?)", [
+      slugs,
+    ]);
+
+    return result.affectedRows;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};

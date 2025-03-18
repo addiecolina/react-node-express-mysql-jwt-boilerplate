@@ -3,6 +3,7 @@ import {
   getTodoById,
   updateTodoById,
   createTodo,
+  deleteTodosByIds,
 } from "../../models/TodosModel.js";
 import { verifyToken } from "../../services/jwtService.js";
 
@@ -100,6 +101,28 @@ class TodosController {
         req,
         res,
         "Successfully updated todos!",
+        todos
+      );
+    } catch {
+      return sendErrorResponse(req, res, 401, errorMessage);
+    }
+  }
+
+  async deleteTodos(req, res) {
+    const { slugs } = req.body || {};
+    const errorMessage = "Failed to delete todos!";
+    const token = verifyToken(req.cookies?.yttmrtck);
+
+    if (!slugs || !token) {
+      return sendErrorResponse(req, res, 401, errorMessage);
+    }
+
+    try {
+      const todos = await deleteTodosByIds(slugs);
+      return sendSuccessResponse(
+        req,
+        res,
+        "Successfully deleted todos!",
         todos
       );
     } catch {

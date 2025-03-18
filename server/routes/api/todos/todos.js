@@ -14,6 +14,7 @@ router.use(
 router.get("/getTodos/:id", todosController.getTodos);
 router.post("/createTodos", todosController.createTodos);
 router.put("/updateTodos", todosController.updateTodos);
+router.delete("/deleteTodos", todosController.deleteTodos);
 
 router.get("*", function (req, res) {
   res.status(404).json({

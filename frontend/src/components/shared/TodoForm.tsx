@@ -6,10 +6,11 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
-  Button,
+  // Button,
   Stack,
   Box,
   FormHelperText,
+  Fab,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs, { Dayjs } from "dayjs";
@@ -21,6 +22,8 @@ import { useTodoUpdate } from "../../api/todo/todoUpdate";
 import { useTodoCreate } from "../../api/todo/todoCreate";
 import { useAuthContext } from "../../utils/hooks/useCustomContext";
 import { v4 as uuidv4 } from "uuid";
+import SaveIcon from "@mui/icons-material/Save";
+import CancelIcon from "@mui/icons-material/Cancel";
 
 const TodoFormSchema = z.object({
   status: z.enum(["1", "2", "3"]),
@@ -43,7 +46,7 @@ const TodoForm = () => {
   const data = location.state?.data || {};
   const { user } = useAuthContext();
 
-  if (updateTodo.isSuccess) {
+  if (updateTodo.isSuccess || createTodo.isSuccess) {
     navigate("/admin");
   }
 
@@ -198,22 +201,40 @@ const TodoForm = () => {
             />
           </Box>
           {mode !== "view" && (
-            <Button type="submit" variant="contained" color="primary">
-              Save
-            </Button>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row-reverse",
+                flexWrap: "wrap-reverse",
+                "& > :not(style)": {
+                  m: 1,
+                },
+              }}
+            >
+              <Fab
+                color="primary"
+                aria-label="save"
+                variant="extended"
+                type="submit"
+                sx={{ maxWidth: "fit-content" }}
+              >
+                <span>SAVE RECORD</span>
+                <SaveIcon />
+              </Fab>
+              <Fab
+                color="secondary"
+                aria-label="cancel"
+                variant="extended"
+                sx={{ maxWidth: "fit-content" }}
+                onClick={() => navigate(-1)}
+              >
+                <span>CANCEL</span>
+                <CancelIcon />
+              </Fab>
+            </Box>
           )}
         </Box>
       </Stack>
-      <Box>
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={() => navigate(-1)}
-          sx={{ mt: 2 }}
-        >
-          Back
-        </Button>
-      </Box>
     </LocalizationProvider>
   );
 };

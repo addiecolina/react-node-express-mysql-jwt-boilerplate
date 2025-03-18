@@ -9,6 +9,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
 import Stack from "@mui/material/Stack";
+import { DialogProvider } from "muibox";
 
 const queryClient = new QueryClient();
 
@@ -27,17 +28,19 @@ function App() {
   return (
     <>
       <ErrorBoundary FallbackComponent={Fallback}>
-        <QueryClientProvider client={queryClient}>
-          <BrowserRouter basename={import.meta.env.VITE_BASENAME}>
-            <Routes>
-              <Route path="*" element={<HeaderLayout />}>
-                <Route index element={<Landing />} />
-                <Route path="register" element={<RegisterPage />} />
-                <Route path="*" element={<AuthProviderRoutes />} />
-              </Route>
-            </Routes>
-          </BrowserRouter>
-        </QueryClientProvider>
+        <DialogProvider>
+          <QueryClientProvider client={queryClient}>
+            <BrowserRouter basename={import.meta.env.VITE_BASENAME}>
+              <Routes>
+                <Route path="*" element={<HeaderLayout />}>
+                  <Route index element={<Landing />} />
+                  <Route path="register" element={<RegisterPage />} />
+                  <Route path="*" element={<AuthProviderRoutes />} />
+                </Route>
+              </Routes>
+            </BrowserRouter>
+          </QueryClientProvider>
+        </DialogProvider>
       </ErrorBoundary>
     </>
   );
