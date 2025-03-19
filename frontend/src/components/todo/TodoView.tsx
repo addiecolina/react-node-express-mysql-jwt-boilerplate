@@ -78,7 +78,21 @@ const TodoView = () => {
           </>
         );
       case "In Progress":
-        return <img src="/images/in-progress.svg" alt="In Progress" />;
+        return (
+          <>
+            <img src="/images/in-progress.svg" alt="In Progress" />;
+            <Typography
+              component="span"
+              sx={{
+                marginLeft: 1,
+                fontFamily: "inherit",
+                fontSize: 14,
+              }}
+            >
+              In Progress
+            </Typography>
+          </>
+        );
       case "Not Started":
         return (
           <>

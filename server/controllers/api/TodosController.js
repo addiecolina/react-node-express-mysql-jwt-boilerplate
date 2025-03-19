@@ -31,8 +31,16 @@ class TodosController {
   }
 
   async createTodos(req, res) {
-    const { title, description, priority, status, due_at, user_id, slug } =
-      req.body || {};
+    const {
+      title,
+      description,
+      priority,
+      status,
+      due_at,
+      user_id,
+      slug,
+      subtasks,
+    } = req.body || {};
     const errorMessage = "Failed to create todos!";
     const token = verifyToken(req.cookies?.yttmrtck);
 
@@ -57,7 +65,8 @@ class TodosController {
         status,
         user_id,
         slug,
-        due_at
+        due_at,
+        subtasks
       );
       return sendSuccessResponse(
         req,

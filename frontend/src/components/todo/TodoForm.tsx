@@ -1,4 +1,4 @@
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   TextField,
@@ -10,6 +10,9 @@ import {
   Box,
   FormHelperText,
   Fab,
+  Button,
+  Grid,
+  Typography,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs, { Dayjs } from "dayjs";
@@ -22,6 +25,11 @@ import { useAuthContext } from "../../utils/hooks/useCustomContext";
 import { v4 as uuidv4 } from "uuid";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
+
+const subTaskSchema = z.object({
+  description: z.string().min(1, "Description is required"),
+  status: z.enum(["Done", "Not Done"]),
+});
 
 const TodoFormSchema = z.object({
   status: z.enum(["Not Started", "In Progress", "Cancelled", "Completed"]),
@@ -38,6 +46,9 @@ const TodoFormSchema = z.object({
   created_at: z.instanceof(dayjs as unknown as typeof Dayjs).optional(),
   slug: z.string().optional(),
   completed_at: z.instanceof(dayjs as unknown as typeof Dayjs).optional(),
+  subtasks: z
+    .array(subTaskSchema)
+    .max(10, "You can add up to 10 subtasks only"),
 });
 
 type TodoFormData = z.infer<typeof TodoFormSchema>;
@@ -59,7 +70,12 @@ const TodoForm = () => {
     navigate(-1);
   }
 
-  const { control, handleSubmit } = useForm<TodoFormData>({
+  const {
+    control,
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm<TodoFormData>({
     resolver: zodResolver(TodoFormSchema),
     defaultValues: {
       status: data.status,
@@ -69,7 +85,13 @@ const TodoForm = () => {
       due_at: dayjs(data.due_at) as Dayjs,
       created_at: dayjs(data.created_at) as Dayjs,
       completed_at: dayjs(data.completed_at) as Dayjs,
+      subtasks: data.subtasks ? JSON.parse(data.subtasks) : [],
     },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "subtasks",
   });
 
   const onSubmit = async (form: TodoFormData) => {
@@ -140,7 +162,7 @@ const TodoForm = () => {
                 </FormControl>
               )}
             />
-            <Controller
+            {/* <Controller
               name="completed_at"
               control={control}
               disabled
@@ -151,7 +173,7 @@ const TodoForm = () => {
                   defaultValue={dayjs(data.completed_at) as Dayjs}
                 />
               )}
-            />
+            /> */}
           </Box>
           <Controller
             name="title"
@@ -217,6 +239,58 @@ const TodoForm = () => {
               />
             )}
           />
+          <Grid container spacing={2} sx={{ mt: 2 }}>
+            <Typography variant="h4">Subtasks</Typography>
+            {fields.map((field, index) => (
+              <Grid container item spacing={2} key={field.id}>
+                <Grid item xs={6}>
+                  <TextField
+                    {...register(`subtasks.${index}.description` as const)}
+                    label="Description"
+                    fullWidth
+                    error={!!errors.subtasks?.[index]?.description}
+                    helperText={errors.subtasks?.[index]?.description?.message}
+                  />
+                </Grid>
+                <Grid item xs={4}>
+                  <Controller
+                    name={`subtasks.${index}.status` as const}
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        select
+                        label="Status"
+                        fullWidth
+                        error={!!errors.subtasks?.[index]?.status}
+                      >
+                        <MenuItem value="Done">Done</MenuItem>
+                        <MenuItem value="Not Done">Not Done</MenuItem>
+                      </TextField>
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={2}>
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    onClick={() => remove(index)}
+                  >
+                    Delete
+                  </Button>
+                </Grid>
+              </Grid>
+            ))}
+            <Grid item xs={12}>
+              <Button
+                variant="contained"
+                onClick={() => append({ description: "", status: "Not Done" })}
+                disabled={fields.length >= 10}
+              >
+                Add Subtask
+              </Button>
+            </Grid>
+          </Grid>
           {mode !== "view" && (
             <Box
               sx={{

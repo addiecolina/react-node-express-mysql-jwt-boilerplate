@@ -27,7 +27,8 @@ export const createTodo = async (
   status,
   user_id,
   slug,
-  due_at
+  due_at,
+  subtasks
 ) => {
   if (
     !title ||
@@ -45,8 +46,17 @@ export const createTodo = async (
   try {
     const [rows] = await connection.then((establishedConnection) =>
       establishedConnection.query(
-        "INSERT INTO todos (title, description, priority, status, user_id, slug, due_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
-        [title, description, priority, status, user_id, slug, due_at]
+        "INSERT INTO todos (title, description, priority, status, user_id, slug, due_at, subtasks) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        [
+          title,
+          description,
+          priority,
+          status,
+          user_id,
+          slug,
+          due_at,
+          JSON.stringify(subtasks),
+        ]
       )
     );
     console.log("Record Created:", rows);
