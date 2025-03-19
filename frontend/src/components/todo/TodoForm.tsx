@@ -26,8 +26,14 @@ import CancelIcon from "@mui/icons-material/Cancel";
 const TodoFormSchema = z.object({
   status: z.enum(["Not Started", "In Progress", "Cancelled", "Completed"]),
   priority: z.enum(["Critical", "High", "Low"]),
-  title: z.string().min(1, "Title is required"),
-  description: z.string().min(1, "Description is required"),
+  title: z
+    .string()
+    .min(1, "Title is required")
+    .max(25, "Maximum of 25 characters allowed"),
+  description: z
+    .string()
+    .min(1, "Description is required")
+    .max(300, "Maximum of 300 characters allowed"),
   due_at: z.instanceof(dayjs as unknown as typeof Dayjs),
   created_at: z.instanceof(dayjs as unknown as typeof Dayjs).optional(),
   slug: z.string().optional(),
@@ -62,6 +68,7 @@ const TodoForm = () => {
       description: data.description,
       due_at: dayjs(data.due_at) as Dayjs,
       created_at: dayjs(data.created_at) as Dayjs,
+      completed_at: dayjs(data.completed_at) as Dayjs,
     },
   });
 
@@ -87,6 +94,29 @@ const TodoForm = () => {
         <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)}>
           <Box sx={{ display: "flex", gap: 2 }}>
             <Controller
+              name="priority"
+              control={control}
+              render={({ field: { onChange, value }, fieldState }) => (
+                <FormControl
+                  variant="outlined"
+                  margin="normal"
+                  sx={{ minWidth: 185 }}
+                  disabled={mode === "edit"}
+                  error={!!fieldState.error}
+                >
+                  <InputLabel>Priority</InputLabel>
+                  <Select onChange={onChange} label="Priority" value={value}>
+                    <MenuItem value="Critical">Critical</MenuItem>
+                    <MenuItem value="High">High</MenuItem>
+                    <MenuItem value="Low">Low</MenuItem>
+                  </Select>
+                  <FormHelperText>
+                    {fieldState.error ? fieldState.error.message : null}
+                  </FormHelperText>
+                </FormControl>
+              )}
+            />
+            <Controller
               name="status"
               control={control}
               render={({ field: { onChange, value }, fieldState }) => (
@@ -111,26 +141,15 @@ const TodoForm = () => {
               )}
             />
             <Controller
-              name="priority"
+              name="completed_at"
               control={control}
-              render={({ field: { onChange, value }, fieldState }) => (
-                <FormControl
-                  variant="outlined"
-                  margin="normal"
-                  sx={{ minWidth: 185 }}
-                  disabled={mode === "view"}
-                  error={!!fieldState.error}
-                >
-                  <InputLabel>Priority</InputLabel>
-                  <Select onChange={onChange} label="Priority" value={value}>
-                    <MenuItem value="Critical">Critical</MenuItem>
-                    <MenuItem value="High">High</MenuItem>
-                    <MenuItem value="Low">Low</MenuItem>
-                  </Select>
-                  <FormHelperText>
-                    {fieldState.error ? fieldState.error.message : null}
-                  </FormHelperText>
-                </FormControl>
+              disabled
+              render={({ field }) => (
+                <DatePicker
+                  {...field}
+                  label="Completed"
+                  defaultValue={dayjs(data.completed_at) as Dayjs}
+                />
               )}
             />
           </Box>
@@ -144,7 +163,7 @@ const TodoForm = () => {
                 variant="outlined"
                 fullWidth
                 margin="normal"
-                disabled={mode === "view"}
+                disabled={mode === "edit"}
                 multiline
                 rows={4}
                 value={value}
@@ -153,26 +172,7 @@ const TodoForm = () => {
               />
             )}
           />
-          <Controller
-            name="description"
-            control={control}
-            render={({ field: { onChange, value }, fieldState }) => (
-              <TextField
-                onChange={onChange}
-                label="Description"
-                variant="outlined"
-                fullWidth
-                margin="normal"
-                disabled={mode === "view"}
-                multiline
-                rows={4}
-                value={value}
-                error={!!fieldState.error}
-                helperText={fieldState.error ? fieldState.error.message : null}
-              />
-            )}
-          />
-          <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
+          <Box sx={{ display: "grid", gridAutoFlow: "column", gap: 2, mt: 2 }}>
             <Controller
               name="created_at"
               control={control}
@@ -194,11 +194,29 @@ const TodoForm = () => {
                   label="Due At"
                   value={dayjs(value) as Dayjs}
                   disablePast
-                  disabled={mode === "view"}
                 />
               )}
             />
           </Box>
+          <Controller
+            name="description"
+            control={control}
+            render={({ field: { onChange, value }, fieldState }) => (
+              <TextField
+                onChange={onChange}
+                label="Description"
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                disabled={mode === "view"}
+                multiline
+                rows={4}
+                value={value}
+                error={!!fieldState.error}
+                helperText={fieldState.error ? fieldState.error.message : null}
+              />
+            )}
+          />
           {mode !== "view" && (
             <Box
               sx={{
