@@ -303,7 +303,8 @@ const TodoTable: React.FC<TableProps> = (props: TableProps) => {
         const index = props?.dataIndex;
         if (
           index !== undefined &&
-          JSON.parse(mappedTodo[index].subtasks).length === 0
+          mappedTodo[index]?.subtasks &&
+          JSON.parse(mappedTodo[index]?.subtasks).length === 0
         )
           return <div style={{ width: "24px" }} />;
       }

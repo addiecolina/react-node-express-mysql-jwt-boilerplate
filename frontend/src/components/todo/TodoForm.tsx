@@ -1,3 +1,4 @@
+import React from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
@@ -26,7 +27,8 @@ import { v4 as uuidv4 } from "uuid";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { TodoFormSchema } from "../../model/TodoSchema";
+import CheckIcon from "@mui/icons-material/Check";
+import { TodoFormSchema } from "../../model/todoSchema";
 
 type TodoFormData = z.infer<typeof TodoFormSchema>;
 
@@ -38,6 +40,18 @@ const TodoForm = () => {
   const mode = location.state?.mode || "add";
   const data = location.state?.data || {};
   const { user } = useAuthContext();
+
+  const [minWidth, setMinWidth] = React.useState<number | null>(null);
+  const menuCallbackRef = React.useCallback(
+    (menuDiv: HTMLDivElement | null) => {
+      if (menuDiv !== null) {
+        if (minWidth === null || minWidth !== menuDiv.clientWidth) {
+          setMinWidth(menuDiv.clientWidth);
+        }
+      }
+    },
+    []
+  );
 
   if (updateTodo.isSuccess || createTodo.isSuccess) {
     navigate("/admin");
@@ -52,6 +66,7 @@ const TodoForm = () => {
     handleSubmit,
     register,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<TodoFormData>({
     resolver: zodResolver(TodoFormSchema),
@@ -60,7 +75,7 @@ const TodoForm = () => {
       priority: data.priority,
       title: data.title,
       description: data.description,
-      due_at: dayjs(data.due_at) as Dayjs,
+      due_at: dayjs(data.due_at).add(1, "day") as Dayjs,
       created_at: dayjs(data.created_at) as Dayjs,
       completed_at: dayjs(data.completed_at) as Dayjs,
       subtasks: data.subtasks ? JSON.parse(data.subtasks) : [],
@@ -68,6 +83,13 @@ const TodoForm = () => {
   });
 
   const status = watch("status");
+  const subtasks = watch("subtasks");
+
+  let isSubTaskComplete = true;
+  if (status === "Completed") setValue("completed_at", dayjs() as Dayjs);
+  if (subtasks && subtasks.length > 0) {
+    isSubTaskComplete = subtasks.every((task) => task.status === "Done");
+  }
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -81,7 +103,10 @@ const TodoForm = () => {
       due_at: dayjs(form.due_at).format("YYYY-MM-DD HH:MM:ss"),
       user_id: user?.name as string,
       slug: mode === "add" ? uuidv4() : (data?.slug as string),
-      completed_at: dayjs(form.completed_at).format("YYYY-MM-DD HH:MM:ss"),
+      completed_at:
+        status === "Completed"
+          ? dayjs(form.completed_at).format("YYYY-MM-DD HH:MM:ss")
+          : null,
     };
     if (mode === "add") {
       createTodo.mutate(formData);
@@ -94,7 +119,14 @@ const TodoForm = () => {
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Stack spacing={3}>
         <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)}>
-          <Box sx={{ display: "flex", gap: 2 }}>
+          <Box
+            sx={{
+              display: "flex",
+              gap: 2,
+              alignItems: "baseline",
+              flexWrap: "wrap",
+            }}
+          >
             <Controller
               name="priority"
               control={control}
@@ -110,7 +142,11 @@ const TodoForm = () => {
                     onChange={onChange}
                     label="Priority"
                     value={value}
-                    autoWidth
+                    sx={minWidth === null ? {} : { minWidth: minWidth + 14 }}
+                    MenuProps={{
+                      keepMounted: true,
+                      slotProps: { paper: { ref: menuCallbackRef } },
+                    }}
                   >
                     <MenuItem value="Critical">Critical</MenuItem>
                     <MenuItem value="High">High</MenuItem>
@@ -136,12 +172,21 @@ const TodoForm = () => {
                     onChange={onChange}
                     label="Status"
                     value={value}
-                    autoWidth
+                    sx={minWidth === null ? {} : { minWidth: minWidth + 14 }}
+                    MenuProps={{
+                      keepMounted: true,
+                      slotProps: { paper: { ref: menuCallbackRef } },
+                    }}
                   >
                     <MenuItem value="Not Started">Not Started</MenuItem>
                     <MenuItem value="In Progress">In Progress</MenuItem>
                     <MenuItem value="Cancelled">Cancelled</MenuItem>
-                    <MenuItem value="Completed">Completed</MenuItem>
+                    <MenuItem
+                      value="Completed"
+                      disabled={!isSubTaskComplete || mode === "add"}
+                    >
+                      Completed
+                    </MenuItem>
                   </Select>
                   <FormHelperText>
                     {fieldState.error ? fieldState.error.message : null}
@@ -149,6 +194,20 @@ const TodoForm = () => {
                 </FormControl>
               )}
             />
+            {status === "Completed" && (
+              <Controller
+                name="completed_at"
+                control={control}
+                disabled
+                render={({ field }) => (
+                  <DatePicker
+                    {...field}
+                    label="Completed At"
+                    defaultValue={dayjs(data.completed_at) as Dayjs}
+                  />
+                )}
+              />
+            )}
           </Box>
           <Controller
             name="title"
@@ -187,6 +246,7 @@ const TodoForm = () => {
               control={control}
               render={({ field: { onChange, value } }) => (
                 <DatePicker
+                  disabled={status === "Completed"}
                   onChange={onChange}
                   label="Due At"
                   value={dayjs(value) as Dayjs}
@@ -200,20 +260,6 @@ const TodoForm = () => {
                 />
               )}
             />
-            {status === "Completed" && (
-              <Controller
-                name="completed_at"
-                control={control}
-                disabled
-                render={({ field }) => (
-                  <DatePicker
-                    {...field}
-                    label="Completed At"
-                    defaultValue={dayjs(data.completed_at) as Dayjs}
-                  />
-                )}
-              />
-            )}
           </Box>
           <Controller
             name="description"
@@ -225,7 +271,7 @@ const TodoForm = () => {
                 variant="outlined"
                 fullWidth
                 margin="normal"
-                disabled={mode === "view"}
+                disabled={status === "Completed"}
                 multiline
                 rows={4}
                 value={value}
@@ -253,6 +299,7 @@ const TodoForm = () => {
                     fullWidth
                     error={!!errors.subtasks?.[index]?.description}
                     helperText={errors.subtasks?.[index]?.description?.message}
+                    disabled={status === "Completed"}
                   />
                 </Grid>
                 <Grid item xs={4}>
@@ -265,6 +312,7 @@ const TodoForm = () => {
                         select
                         label="Status"
                         fullWidth
+                        disabled={status === "Completed"}
                         error={!!errors.subtasks?.[index]?.status}
                       >
                         <MenuItem value="Done">Done</MenuItem>
@@ -278,6 +326,7 @@ const TodoForm = () => {
                     variant="text"
                     color="error"
                     onClick={() => remove(index)}
+                    disabled={status === "Completed"}
                   >
                     <DeleteIcon />
                   </Button>
@@ -288,23 +337,37 @@ const TodoForm = () => {
               <Button
                 variant="outlined"
                 onClick={() => append({ description: "", status: "Not Done" })}
-                disabled={fields.length >= 10}
+                disabled={fields.length >= 10 || status === "Completed"}
               >
                 Add Subtask
               </Button>
             </Grid>
           </Grid>
-          {mode !== "view" && (
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "row-reverse",
-                flexWrap: "wrap-reverse",
-                "& > :not(style)": {
-                  m: 1,
-                },
-              }}
-            >
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row-reverse",
+              flexWrap: "wrap-reverse",
+              "& > :not(style)": {
+                m: 1,
+              },
+            }}
+          >
+            {isSubTaskComplete &&
+            status !== "Completed" &&
+            subtasks.length > 0 ? (
+              <Fab
+                color="primary"
+                aria-label="save"
+                variant="extended"
+                type="button"
+                onClick={() => setValue("status", "Completed")}
+                sx={{ maxWidth: "fit-content" }}
+              >
+                <span>MARK AS COMPLETE</span>
+                <CheckIcon />
+              </Fab>
+            ) : (
               <Fab
                 color="primary"
                 aria-label="save"
@@ -315,18 +378,19 @@ const TodoForm = () => {
                 <span>SAVE RECORD</span>
                 <SaveIcon />
               </Fab>
-              <Fab
-                color="secondary"
-                aria-label="cancel"
-                variant="extended"
-                sx={{ maxWidth: "fit-content" }}
-                onClick={() => navigate(-1)}
-              >
-                <span>CANCEL</span>
-                <CancelIcon />
-              </Fab>
-            </Box>
-          )}
+            )}
+
+            <Fab
+              color="secondary"
+              aria-label="cancel"
+              variant="extended"
+              sx={{ maxWidth: "fit-content" }}
+              onClick={() => navigate(-1)}
+            >
+              <span>CANCEL</span>
+              <CancelIcon />
+            </Fab>
+          </Box>
         </Box>
       </Stack>
     </LocalizationProvider>

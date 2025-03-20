@@ -1,19 +1,13 @@
 import { z } from 'zod';
 import dayjs, { Dayjs } from "dayjs";
 
-// const dayjsSchema = z.instanceof(dayjs as unknown as typeof Dayjs).refine(
-//   (date) => !dayjs(date).isSame(dayjs(), 'day'),
-//   {
-//     message: "Date must not be today",
-//   }
-// );
-
 const subTaskSchema = z.object({
   description: z.string().min(1, "Description is required"),
   status: z.enum(["Done", "Not Done"]),
 });
 
-export const TodoFormSchema = z.object({
+export const TodoFormSchema = z
+  .object({
   status: z.enum(["Not Started", "In Progress", "Cancelled", "Completed"]),
   priority: z.enum(["Critical", "High", "Low"]),
   title: z
@@ -31,7 +25,16 @@ export const TodoFormSchema = z.object({
   subtasks: z
     .array(subTaskSchema)
     .max(10, "You can add up to 10 subtasks only"),
-})
+  })
+  // .superRefine((data, ctx) => {
+  //   if (data.status !== 'Completed' && !dayjs(data.due_at).isSame(dayjs(data.created_at), 'day')) {
+  //     ctx.addIssue({
+  //       code: z.ZodIssueCode.custom,
+  //       path: ['due_at'],
+  //       message: 'The compared price should be higher than the actual one.',
+  //     })
+  //   }
+  // })
 .refine((data) => !dayjs(data.due_at).isSame(dayjs(data.created_at), 'day'), {
   message: "Due date cannot be equal to today",
   path: ["due_at"]
