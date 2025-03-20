@@ -26,31 +26,7 @@ import { v4 as uuidv4 } from "uuid";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 import DeleteIcon from "@mui/icons-material/Delete";
-
-const subTaskSchema = z.object({
-  description: z.string().min(1, "Description is required"),
-  status: z.enum(["Done", "Not Done"]),
-});
-
-const TodoFormSchema = z.object({
-  status: z.enum(["Not Started", "In Progress", "Cancelled", "Completed"]),
-  priority: z.enum(["Critical", "High", "Low"]),
-  title: z
-    .string()
-    .min(1, "Title is required")
-    .max(25, "Maximum of 25 characters allowed"),
-  description: z
-    .string()
-    .min(1, "Description is required")
-    .max(300, "Maximum of 300 characters allowed"),
-  due_at: z.instanceof(dayjs as unknown as typeof Dayjs),
-  created_at: z.instanceof(dayjs as unknown as typeof Dayjs).optional(),
-  slug: z.string().optional(),
-  completed_at: z.instanceof(dayjs as unknown as typeof Dayjs).optional(),
-  subtasks: z
-    .array(subTaskSchema)
-    .max(10, "You can add up to 10 subtasks only"),
-});
+import { TodoFormSchema } from "../../model/TodoSchema";
 
 type TodoFormData = z.infer<typeof TodoFormSchema>;
 
@@ -75,6 +51,7 @@ const TodoForm = () => {
     control,
     handleSubmit,
     register,
+    watch,
     formState: { errors },
   } = useForm<TodoFormData>({
     resolver: zodResolver(TodoFormSchema),
@@ -90,6 +67,8 @@ const TodoForm = () => {
     },
   });
 
+  const status = watch("status");
+
   const { fields, append, remove } = useFieldArray({
     control,
     name: "subtasks",
@@ -102,7 +81,7 @@ const TodoForm = () => {
       due_at: dayjs(form.due_at).format("YYYY-MM-DD HH:MM:ss"),
       user_id: user?.name as string,
       slug: mode === "add" ? uuidv4() : (data?.slug as string),
-      completed_at: null,
+      completed_at: dayjs(form.completed_at).format("YYYY-MM-DD HH:MM:ss"),
     };
     if (mode === "add") {
       createTodo.mutate(formData);
@@ -123,12 +102,16 @@ const TodoForm = () => {
                 <FormControl
                   variant="outlined"
                   margin="normal"
-                  sx={{ minWidth: 185 }}
                   disabled={mode === "edit"}
                   error={!!fieldState.error}
                 >
                   <InputLabel>Priority</InputLabel>
-                  <Select onChange={onChange} label="Priority" value={value}>
+                  <Select
+                    onChange={onChange}
+                    label="Priority"
+                    value={value}
+                    autoWidth
+                  >
                     <MenuItem value="Critical">Critical</MenuItem>
                     <MenuItem value="High">High</MenuItem>
                     <MenuItem value="Low">Low</MenuItem>
@@ -146,12 +129,15 @@ const TodoForm = () => {
                 <FormControl
                   variant="outlined"
                   margin="normal"
-                  sx={{ minWidth: 185 }}
-                  disabled={mode === "view"}
                   error={!!fieldState.error}
                 >
                   <InputLabel>Status</InputLabel>
-                  <Select onChange={onChange} label="Status" value={value}>
+                  <Select
+                    onChange={onChange}
+                    label="Status"
+                    value={value}
+                    autoWidth
+                  >
                     <MenuItem value="Not Started">Not Started</MenuItem>
                     <MenuItem value="In Progress">In Progress</MenuItem>
                     <MenuItem value="Cancelled">Cancelled</MenuItem>
@@ -163,18 +149,6 @@ const TodoForm = () => {
                 </FormControl>
               )}
             />
-            {/* <Controller
-              name="completed_at"
-              control={control}
-              disabled
-              render={({ field }) => (
-                <DatePicker
-                  {...field}
-                  label="Completed"
-                  defaultValue={dayjs(data.completed_at) as Dayjs}
-                />
-              )}
-            /> */}
           </Box>
           <Controller
             name="title"
@@ -217,9 +191,29 @@ const TodoForm = () => {
                   label="Due At"
                   value={dayjs(value) as Dayjs}
                   disablePast
+                  slotProps={{
+                    textField: {
+                      helperText: errors.due_at ? errors.due_at.message : "",
+                      error: !!errors.due_at,
+                    },
+                  }}
                 />
               )}
             />
+            {status === "Completed" && (
+              <Controller
+                name="completed_at"
+                control={control}
+                disabled
+                render={({ field }) => (
+                  <DatePicker
+                    {...field}
+                    label="Completed At"
+                    defaultValue={dayjs(data.completed_at) as Dayjs}
+                  />
+                )}
+              />
+            )}
           </Box>
           <Controller
             name="description"
