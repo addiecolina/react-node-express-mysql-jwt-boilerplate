@@ -14,7 +14,7 @@ class TodosController {
     const token = verifyToken(req.cookies?.yttmrtck);
 
     if (!id || !token) {
-      return sendErrorResponse(req, res, 401, errorMessage);
+      return sendErrorResponse(req, res, 400, errorMessage);
     }
 
     try {
@@ -26,7 +26,7 @@ class TodosController {
         todos
       );
     } catch {
-      return sendErrorResponse(req, res, 401, errorMessage);
+      return sendErrorResponse(req, res, 400, errorMessage);
     }
   }
 
@@ -54,7 +54,7 @@ class TodosController {
       !due_at ||
       !token
     ) {
-      return sendErrorResponse(req, res, 401, errorMessage);
+      return sendErrorResponse(req, res, 400, errorMessage);
     }
 
     try {
@@ -75,7 +75,7 @@ class TodosController {
         todos
       );
     } catch {
-      return sendErrorResponse(req, res, 401, errorMessage);
+      return sendErrorResponse(req, res, 400, errorMessage);
     }
   }
 
@@ -94,7 +94,7 @@ class TodosController {
       !slug ||
       !token
     ) {
-      return sendErrorResponse(req, res, 401, errorMessage);
+      return sendErrorResponse(req, res, 400, errorMessage);
     }
 
     try {
@@ -114,7 +114,7 @@ class TodosController {
         todos
       );
     } catch {
-      return sendErrorResponse(req, res, 401, errorMessage);
+      return sendErrorResponse(req, res, 400, errorMessage);
     }
   }
 
@@ -124,7 +124,7 @@ class TodosController {
     const token = verifyToken(req.cookies?.yttmrtck);
 
     if (!slugs || !token) {
-      return sendErrorResponse(req, res, 401, errorMessage);
+      return sendErrorResponse(req, res, 400, errorMessage);
     }
 
     try {
@@ -136,7 +136,7 @@ class TodosController {
         todos
       );
     } catch {
-      return sendErrorResponse(req, res, 401, errorMessage);
+      return sendErrorResponse(req, res, 400, errorMessage);
     }
   }
 }

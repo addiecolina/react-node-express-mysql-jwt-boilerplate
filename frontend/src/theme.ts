@@ -2,15 +2,15 @@ import { createTheme } from "@mui/material/styles";
 
 const theme = createTheme({
   typography: {
-    fontFamily: '"Public Sans", sans-serif',
+    fontFamily: '"Roboto", "Public Sans", sans-serif',
   },
   palette: {
-    primary: { main: "#35a2db" },
+    primary: { main: "#027cec" },
     secondary: {
       main: "#CCC",
     },
     error: {
-      main: "#fe0000",
+      main: "#ca0061",
     },
   },
   components: {

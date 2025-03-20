@@ -25,6 +25,7 @@ import { useAuthContext } from "../../utils/hooks/useCustomContext";
 import { v4 as uuidv4 } from "uuid";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const subTaskSchema = z.object({
   description: z.string().min(1, "Description is required"),
@@ -97,8 +98,8 @@ const TodoForm = () => {
   const onSubmit = async (form: TodoFormData) => {
     const formData = {
       ...form,
-      created_at: dayjs(data.created_at).format("YYYY-MM-DD HH:MM:ss"),
-      due_at: dayjs(data.due_at).format("YYYY-MM-DD HH:MM:ss"),
+      created_at: dayjs(form.created_at).format("YYYY-MM-DD HH:MM:ss"),
+      due_at: dayjs(form.due_at).format("YYYY-MM-DD HH:MM:ss"),
       user_id: user?.name as string,
       slug: mode === "add" ? uuidv4() : (data?.slug as string),
       completed_at: null,
@@ -240,9 +241,17 @@ const TodoForm = () => {
             )}
           />
           <Grid container spacing={2} sx={{ mt: 2 }}>
-            <Typography variant="h4">Subtasks</Typography>
+            <Typography variant="h6" sx={{ paddingLeft: "16px" }}>
+              Subtasks
+            </Typography>
             {fields.map((field, index) => (
-              <Grid container item spacing={2} key={field.id}>
+              <Grid
+                container
+                item
+                spacing={2}
+                key={field.id}
+                alignItems="center"
+              >
                 <Grid item xs={6}>
                   <TextField
                     {...register(`subtasks.${index}.description` as const)}
@@ -272,18 +281,18 @@ const TodoForm = () => {
                 </Grid>
                 <Grid item xs={2}>
                   <Button
-                    variant="outlined"
+                    variant="text"
                     color="error"
                     onClick={() => remove(index)}
                   >
-                    Delete
+                    <DeleteIcon />
                   </Button>
                 </Grid>
               </Grid>
             ))}
             <Grid item xs={12}>
               <Button
-                variant="contained"
+                variant="outlined"
                 onClick={() => append({ description: "", status: "Not Done" })}
                 disabled={fields.length >= 10}
               >

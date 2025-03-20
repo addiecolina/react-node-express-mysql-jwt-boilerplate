@@ -22,7 +22,8 @@ import Fab from "@mui/material/Fab";
 import Link from "@mui/material/Link";
 import AddIcon from "@mui/icons-material/Add";
 import { Link as RouterLink } from "react-router-dom";
-import Table from "../../todo/Table";
+import TodoTable from "../../todo/Table";
+import SvgIcon from "@mui/material/SvgIcon";
 
 const drawerWidth = 240;
 
@@ -77,6 +78,7 @@ export default function Dashboard(props: Props) {
       <CssBaseline />
       <AppBar
         position="fixed"
+        color="default"
         sx={{
           zIndex: (theme) => theme.zIndex.drawer + 1,
         }}
@@ -91,9 +93,7 @@ export default function Dashboard(props: Props) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            Responsive drawer
-          </Typography>
+          <img src="/images/logo.svg" alt="logo" />
         </Toolbar>
       </AppBar>
       <Box
@@ -153,23 +153,23 @@ export default function Dashboard(props: Props) {
             },
           }}
         >
-          <Fab
-            color="primary"
-            aria-label="add"
-            variant="extended"
-            sx={{ maxWidth: "fit-content" }}
+          <Link
+            component={RouterLink}
+            to="/admin/details"
+            state={{ mode: "add" }}
+            sx={{ display: "contents", color: "white" }}
           >
-            <Link
-              component={RouterLink}
-              to="/admin/details"
-              state={{ mode: "add" }}
-              sx={{ display: "contents", color: "white" }}
+            <Fab
+              color="primary"
+              aria-label="add"
+              variant="extended"
+              sx={{ maxWidth: "fit-content", m: 1 }}
             >
               <span>New Todo</span>
               <AddIcon />
-            </Link>
-          </Fab>
-          {user?.name && <Table id={user.name} />}
+            </Fab>
+          </Link>
+          {user?.name && <TodoTable id={user.name} />}
         </Box>
       </Box>
     </Box>

@@ -1,5 +1,9 @@
 import * as React from "react";
-import MUIDataTable, { MUIDataTableOptions } from "mui-datatables";
+import MUIDataTable, {
+  MUIDataTableOptions,
+  ExpandButton,
+  MUIDataTableExpandButton,
+} from "mui-datatables";
 import { ThemeProvider } from "@mui/material/styles";
 import { createTheme } from "@mui/material/styles";
 import { CacheProvider } from "@emotion/react";
@@ -11,6 +15,14 @@ import { Link as RouterLink } from "react-router-dom";
 import dayjs from "dayjs";
 import { useDialog } from "muibox";
 import { useTodoDelete } from "../../api/todo/todoDelete";
+import { JSX } from "react/jsx-runtime";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
+import getFlag from "../../utils/getFlag";
 
 const muiCache = createCache({
   key: "mui-datatables",
@@ -28,7 +40,7 @@ interface TodoItem {
   status: string;
 }
 
-const Table: React.FC<TableProps> = (props: TableProps) => {
+const TodoTable: React.FC<TableProps> = (props: TableProps) => {
   const todo = useTodo(props.id);
   const dialog = useDialog();
   const deleteTodo = useTodoDelete();
@@ -36,9 +48,9 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
   const mappedTodo = todo.data?.data?.map((item: TodoItem) => ({
     ...item,
     title: item.title,
-    dueDate: dayjs(item.due_at).format("MM/DD/YYYY"),
-    priority: item.priority.toString(),
-    status: item.status.toString(),
+    // dueDate: dayjs(item.due_at).format("MM/DD/YYYY"),
+    priority: item.priority,
+    status: item.status,
   }));
 
   const columns = [
@@ -60,7 +72,33 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
         },
       },
     },
-    { name: "dueDate", label: "Due Date", options: { filter: false } },
+    {
+      name: "dueDate",
+      label: "Due Date",
+      options: {
+        filter: false,
+        customBodyRenderLite: (dataIndex: number) => {
+          const isDue = getFlag(
+            mappedTodo[dataIndex].due_at,
+            mappedTodo[dataIndex].status,
+            mappedTodo[dataIndex].priority
+          );
+
+          return (
+            <>
+              <Typography sx={{ color: isDue, fontSize: "14px" }}>
+                {dayjs(mappedTodo[dataIndex].due_at).format("MM/DD/YYYY")}
+              </Typography>
+              {isDue.flag && (
+                <Typography sx={{ color: isDue, fontSize: "14px" }}>
+                  {isDue.message}
+                </Typography>
+              )}
+            </>
+          );
+        },
+      },
+    },
     {
       name: "priority",
       label: "Priority",
@@ -169,6 +207,7 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
     },
     {
       name: "",
+      label: "Edit Item",
       options: {
         filter: false,
         sort: false,
@@ -184,6 +223,14 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
             </Link>
           );
         },
+      },
+    },
+    {
+      name: "subtasks",
+      label: "",
+      options: {
+        display: false,
+        filter: false,
       },
     },
   ];
@@ -205,6 +252,63 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
         })
         .catch(() => console.log("Cancelled Deletion!"));
     },
+    expandableRows: true,
+    expandableRowsHeader: false,
+    isRowExpandable: (dataIndex: number) => {
+      const isExpandable =
+        JSON.parse(mappedTodo[dataIndex].subtasks).length > 0;
+      if (!isExpandable) {
+        return false;
+      }
+      return true;
+    },
+    renderExpandableRow: (rowData) => {
+      const data = JSON.parse(rowData[5]);
+      return (
+        <tr>
+          <td colSpan={6}>
+            <TableContainer component={Paper} sx={{ width: "100%" }}>
+              <Table style={{ textIndent: "100px" }} aria-label="simple table">
+                <TableBody>
+                  {data.map(
+                    (
+                      d: { description: string; status: string },
+                      index: number
+                    ) => (
+                      <TableRow
+                        key={index}
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
+                        }}
+                      >
+                        <TableCell>{d.description}</TableCell>
+                        <TableCell align="center">{d.status}</TableCell>
+                      </TableRow>
+                    )
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </td>
+        </tr>
+      );
+    },
+  };
+
+  const components = {
+    ExpandButton: function (
+      props: JSX.IntrinsicAttributes & MUIDataTableExpandButton
+    ) {
+      if (mappedTodo && mappedTodo.length > 0) {
+        const index = props?.dataIndex;
+        if (
+          index !== undefined &&
+          JSON.parse(mappedTodo[index].subtasks).length === 0
+        )
+          return <div style={{ width: "24px" }} />;
+      }
+      return <ExpandButton {...props} />;
+    },
   };
 
   return (
@@ -215,10 +319,11 @@ const Table: React.FC<TableProps> = (props: TableProps) => {
           data={mappedTodo}
           columns={columns}
           options={options}
+          components={components}
         />
       </ThemeProvider>
     </CacheProvider>
   );
 };
 
-export default Table;
+export default TodoTable;
