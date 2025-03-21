@@ -26,16 +26,4 @@ export const TodoFormSchema = z
     .array(subTaskSchema)
     .max(10, "You can add up to 10 subtasks only"),
   });
-  // .superRefine((data, ctx) => {
-  //   if (data.status !== 'Completed' && !dayjs(data.due_at).isSame(dayjs(data.created_at), 'day')) {
-  //     ctx.addIssue({
-  //       code: z.ZodIssueCode.custom,
-  //       path: ['due_at'],
-  //       message: 'The compared price should be higher than the actual one.',
-  //     })
-  //   }
-  // })
-// .refine((data) => !dayjs(data.due_at).isSame(dayjs(data.created_at), 'day'), {
-//   message: "Due date cannot be equal to today",
-//   path: ["due_at"]
-// });
+  

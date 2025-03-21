@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useCallback, useMemo, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -19,9 +18,9 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 const schema = z
   .object({
-    username: z.string({
-      required_error: "Username is required",
-    }),
+    username: z
+      .string()
+      .min(3, "Username must be at least three characters long"),
     password: z
       .string()
       .regex(/[a-zA-Z]/, "Password must contain at least one letter")
@@ -88,6 +87,7 @@ const Register: React.FC = () => {
         setAlertMessage(response.data.error.message);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
@@ -193,51 +193,6 @@ const Register: React.FC = () => {
         </Box>
       </Grid>
     </LandingWrapper>
-    // <>
-    //   <div>
-    //     <div>
-    //       <h1 style={{ textAlign: "center" }}>Create Account</h1>
-    //       <form onSubmit={handleSubmit(onSubmit)}>
-    //         <Controller
-    //           name="username"
-    //           control={control}
-    //           defaultValue=""
-    //           render={({ field, fieldState }) => (
-    //             <TextField
-    //               {...field}
-    //               label="Username"
-    //               error={!!fieldState.error}
-    //               helperText={
-    //                 fieldState.error ? fieldState.error.message : null
-    //               }
-    //               margin="normal"
-    //             />
-    //           )}
-    //         />
-    //         <Controller
-    //           name="password"
-    //           control={control}
-    //           defaultValue=""
-    //           render={({ field, fieldState }) => (
-    //             <TextField
-    //               {...field}
-    //               label="Password"
-    //               type="password"
-    //               error={!!fieldState.error}
-    //               helperText={
-    //                 fieldState.error ? fieldState.error.message : null
-    //               }
-    //               margin="normal"
-    //             />
-    //           )}
-    //         />
-    //         <Button type="submit" variant="contained" color="primary">
-    //           Submit
-    //         </Button>
-    //       </form>
-    //     </div>
-    //   </div>
-    // </>
   );
 };
 

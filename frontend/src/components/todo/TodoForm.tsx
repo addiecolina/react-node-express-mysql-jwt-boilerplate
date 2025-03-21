@@ -50,7 +50,7 @@ const TodoForm = () => {
   const methods = useForm<TodoFormData>({
     resolver: zodResolver(TodoFormSchema),
     defaultValues: {
-      status: data.status,
+      status: mode === "add" ? "Not Started" : data.status,
       priority: data.priority,
       title: data.title,
       description: data.description,
@@ -87,7 +87,10 @@ const TodoForm = () => {
       mode === "add" &&
       dayjs(form.due_at).isSame(dayjs(form.created_at), "day")
     ) {
-      setError("due_at", { type: "custom", message: "Foo" });
+      setError("due_at", {
+        type: "custom",
+        message: "Due date cannot be equal to today",
+      });
       return false;
     }
 

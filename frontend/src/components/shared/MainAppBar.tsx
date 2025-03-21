@@ -40,7 +40,7 @@ export default function MainAppBar(props: Props) {
   const handleIcon = (index: number) => {
     switch (index) {
       case 0:
-        navigate(-1);
+        navigate("/admin");
         break;
       case 1:
         dialog

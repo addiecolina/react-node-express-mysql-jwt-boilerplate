@@ -8,7 +8,7 @@ const useAxiosInstance = () => {
   const createAxiosInstance = useCallback(() => {
     const axiosInstance = axios.create({
       baseURL: import.meta.env.VITE_API_PUBLIC_URL,
-      timeout: 1000,
+      timeout: 5000,
       withCredentials: true,
       validateStatus: function (status) {
         return status >= 200 && status < 600;

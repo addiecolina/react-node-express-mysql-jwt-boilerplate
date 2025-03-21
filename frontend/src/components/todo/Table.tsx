@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as React from "react";
 import MUIDataTable, {
   MUIDataTableOptions,
@@ -51,6 +52,7 @@ const TodoTable: React.FC<TableProps> = (props: TableProps) => {
     title: item.title,
     priority: item.priority,
     status: item.status,
+    dueDate: dayjs(item.due_at).format("MM/DD/YYYY"),
   }));
 
   const columns = [
@@ -184,7 +186,14 @@ const TodoTable: React.FC<TableProps> = (props: TableProps) => {
         <tr>
           <td colSpan={6}>
             <TableContainer component={Paper} sx={{ width: "100%" }}>
-              <Table style={{ textIndent: "100px" }} aria-label="simple table">
+              <Table
+                sx={{
+                  "@media (min-width: 600px)": {
+                    textIndent: "100px",
+                  },
+                }}
+                aria-label="subtask table"
+              >
                 <TableBody>
                   {data.map(
                     (
@@ -197,7 +206,15 @@ const TodoTable: React.FC<TableProps> = (props: TableProps) => {
                           "&:last-child td, &:last-child th": { border: 0 },
                         }}
                       >
-                        <TableCell>{d.description}</TableCell>
+                        <TableCell
+                          sx={{
+                            "@media (max-width: 600px)": {
+                              textAlign: "right",
+                            },
+                          }}
+                        >
+                          {d.description}
+                        </TableCell>
                         <TableCell align="center">
                           {getStatusIcon(d.status)}
                         </TableCell>
