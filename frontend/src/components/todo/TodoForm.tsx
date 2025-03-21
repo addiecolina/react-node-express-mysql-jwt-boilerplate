@@ -54,7 +54,10 @@ const TodoForm = () => {
       priority: data.priority,
       title: data.title,
       description: data.description,
-      due_at: dayjs(data.due_at).add(1, "day") as Dayjs,
+      due_at:
+        mode === "add"
+          ? (dayjs(data.due_at).add(1, "day") as Dayjs)
+          : (dayjs(data.due_at) as Dayjs),
       created_at: dayjs(data.created_at) as Dayjs,
       completed_at: dayjs(data.completed_at) as Dayjs,
       subtasks: data.subtasks ? JSON.parse(data.subtasks) : [],
@@ -65,6 +68,7 @@ const TodoForm = () => {
     control,
     watch,
     setValue,
+    setError,
     register,
     handleSubmit,
     formState: { errors },
@@ -79,6 +83,14 @@ const TodoForm = () => {
   });
 
   const onSubmit = async (form: TodoFormData) => {
+    if (
+      mode === "add" &&
+      dayjs(form.due_at).isSame(dayjs(form.created_at), "day")
+    ) {
+      setError("due_at", { type: "custom", message: "Foo" });
+      return false;
+    }
+
     const formData = {
       ...form,
       created_at: dayjs(form.created_at).format("YYYY-MM-DD HH:MM:ss"),

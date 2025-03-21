@@ -23,6 +23,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import getFlag from "../../utils/getFlag";
+import { getPriorityIcon, getStatusIcon } from "./utils/GetIcons";
 
 const muiCache = createCache({
   key: "mui-datatables",
@@ -48,7 +49,6 @@ const TodoTable: React.FC<TableProps> = (props: TableProps) => {
   const mappedTodo = todo.data?.data?.map((item: TodoItem) => ({
     ...item,
     title: item.title,
-    // dueDate: dayjs(item.due_at).format("MM/DD/YYYY"),
     priority: item.priority,
     status: item.status,
   }));
@@ -105,20 +105,6 @@ const TodoTable: React.FC<TableProps> = (props: TableProps) => {
       options: {
         filterOptions: { fullWidth: true },
         customBodyRenderLite: (dataIndex: number) => {
-          const getPriorityIcon = (priority: string) => {
-            switch (priority) {
-              case "Critical":
-                return (
-                  <img src="/images/critical.svg" alt="Critical Priority" />
-                );
-              case "High":
-                return <img src="/images/high.svg" alt="High Priority" />;
-              case "Low":
-                return <img src="/images/low.svg" alt="Low Priority" />;
-              default:
-                return null;
-            }
-          };
           return getPriorityIcon(mappedTodo[dataIndex].priority);
         },
       },
@@ -129,79 +115,7 @@ const TodoTable: React.FC<TableProps> = (props: TableProps) => {
       options: {
         filterOptions: { fullWidth: true },
         customBodyRenderLite: (dataIndex: number) => {
-          const getPriorityIcon = (priority: string) => {
-            switch (priority) {
-              case "Completed":
-                return (
-                  <>
-                    <img src="/images/complete.svg" alt="Completed" />
-                    <Typography
-                      component="span"
-                      sx={{
-                        marginLeft: 1,
-                        fontFamily: "inherit",
-                        fontSize: 14,
-                      }}
-                    >
-                      Completed
-                    </Typography>
-                  </>
-                );
-              case "In Progress":
-                return (
-                  <>
-                    <img src="/images/in-progress.svg" alt="In Progress" />
-                    <Typography
-                      component="span"
-                      sx={{
-                        marginLeft: 1,
-                        fontFamily: "inherit",
-                        fontSize: 14,
-                      }}
-                    >
-                      In Progress
-                    </Typography>
-                  </>
-                );
-
-              case "Not Started":
-                return (
-                  <>
-                    <img src="/images/not-started.svg" alt="Not Started" />
-                    <Typography
-                      component="span"
-                      sx={{
-                        marginLeft: 1,
-                        fontFamily: "inherit",
-                        fontSize: 14,
-                      }}
-                    >
-                      Not Started
-                    </Typography>
-                  </>
-                );
-              case "Cancelled":
-                return (
-                  <>
-                    <img src="/images/cancelled.svg" alt="Cancelled" />
-                    <Typography
-                      component="span"
-                      sx={{
-                        marginLeft: 1,
-                        fontFamily: "inherit",
-                        fontSize: 14,
-                      }}
-                    >
-                      Cancelled
-                    </Typography>
-                  </>
-                );
-
-              default:
-                return null;
-            }
-          };
-          return getPriorityIcon(mappedTodo[dataIndex].status);
+          return getStatusIcon(mappedTodo[dataIndex].status);
         },
       },
     },
@@ -238,6 +152,8 @@ const TodoTable: React.FC<TableProps> = (props: TableProps) => {
   const options: MUIDataTableOptions = {
     filterType: "dropdown",
     responsive: "vertical",
+    viewColumns: false,
+    download: false,
     onRowsDelete: (data) => {
       const recordMap = data.data.map(
         (record: { index: number }) => mappedTodo[record.index].slug
@@ -282,7 +198,9 @@ const TodoTable: React.FC<TableProps> = (props: TableProps) => {
                         }}
                       >
                         <TableCell>{d.description}</TableCell>
-                        <TableCell align="center">{d.status}</TableCell>
+                        <TableCell align="center">
+                          {getStatusIcon(d.status)}
+                        </TableCell>
                       </TableRow>
                     )
                   )}

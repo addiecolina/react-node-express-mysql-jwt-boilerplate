@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Fab,
   Box,
@@ -16,6 +15,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useTodoDelete } from "../../api";
 import { useDialog } from "muibox";
 import { Key } from "react";
+import { getPriorityIcon, getStatusIcon } from "./utils/GetIcons";
 
 const TodoView = () => {
   const location = useLocation();
@@ -41,109 +41,6 @@ const TodoView = () => {
       .catch(() => console.log("Cancelled Deletion!"));
   };
 
-  const getPriorityIcon = (priority: string) => {
-    switch (priority) {
-      case "Critical":
-        return (
-          <img
-            src="/images/critical.svg"
-            alt="Critical Priority"
-            style={{ paddingRight: "1rem" }}
-          />
-        );
-      case "High":
-        return (
-          <img
-            src="/images/high.svg"
-            alt="High Priority"
-            style={{ paddingRight: "1rem" }}
-          />
-        );
-      case "Low":
-        return (
-          <img
-            src="/images/low.svg"
-            alt="Low Priority"
-            style={{ paddingRight: "1rem" }}
-          />
-        );
-      default:
-        return null;
-    }
-  };
-
-  const getStatusIcon = (priority: string) => {
-    switch (priority) {
-      case "Completed":
-        return (
-          <>
-            <img src="/images/complete.svg" alt="Completed" />
-            <Typography
-              component="span"
-              sx={{
-                marginLeft: 1,
-                fontFamily: "inherit",
-                fontSize: 14,
-              }}
-            >
-              Completed
-            </Typography>
-          </>
-        );
-      case "In Progress":
-        return (
-          <>
-            <img src="/images/in-progress.svg" alt="In Progress" />
-            <Typography
-              component="span"
-              sx={{
-                marginLeft: 1,
-                fontFamily: "inherit",
-                fontSize: 14,
-              }}
-            >
-              In Progress
-            </Typography>
-          </>
-        );
-      case "Not Started":
-        return (
-          <>
-            <img src="/images/not-started.svg" alt="Not Started" />
-            <Typography
-              component="span"
-              sx={{
-                marginLeft: 1,
-                fontFamily: "inherit",
-                fontSize: 14,
-              }}
-            >
-              Not Started
-            </Typography>
-          </>
-        );
-      case "Cancelled":
-        return (
-          <>
-            <img src="/images/cancelled.svg" alt="Cancelled" />
-            <Typography
-              component="span"
-              sx={{
-                marginLeft: 1,
-                fontFamily: "inherit",
-                fontSize: 14,
-              }}
-            >
-              Cancelled
-            </Typography>
-          </>
-        );
-
-      default:
-        return null;
-    }
-  };
-
   return (
     <>
       <Box
@@ -163,10 +60,11 @@ const TodoView = () => {
             flexDirection: "row",
             alignItems: "center",
             flexWrap: "wrap",
+            columnGap: "14px",
           }}
         >
-          {getPriorityIcon(data.priority)}
-          {getStatusIcon(data.status)}
+          <div>{getPriorityIcon(data.priority)}</div>
+          <div>{getStatusIcon(data.status)}</div>
         </Box>
         <Box
           sx={{
@@ -226,7 +124,7 @@ const TodoView = () => {
               ) => (
                 <ListItem key={index}>
                   <ListItemText primary={value.description} />
-                  <ListItemText primary={value.status} />
+                  <ListItemText primary={getStatusIcon(value.status)} />
                 </ListItem>
               )
             )}

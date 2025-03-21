@@ -18,6 +18,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import React from "react";
 import { useLogout } from "../../utils/hooks/useLogout";
 import { useNavigate } from "react-router-dom";
+import { useDialog } from "muibox";
 
 const drawerWidth = 240;
 
@@ -30,6 +31,7 @@ export default function MainAppBar(props: Props) {
   const logout = useLogout();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const dialog = useDialog();
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -41,7 +43,12 @@ export default function MainAppBar(props: Props) {
         navigate(-1);
         break;
       case 1:
-        logout();
+        dialog
+          .confirm("Are you sure you want to logout?")
+          .then(() => {
+            logout();
+          })
+          .catch(() => console.log("Cancelled Deletion!"));
         break;
       default:
         break;
