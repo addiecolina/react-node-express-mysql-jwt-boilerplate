@@ -150,7 +150,7 @@ const TodoTable: React.FC<TableProps> = (props: TableProps) => {
               case "In Progress":
                 return (
                   <>
-                    <img src="/images/in-progress.svg" alt="In Progress" />;
+                    <img src="/images/in-progress.svg" alt="In Progress" />
                     <Typography
                       component="span"
                       sx={{

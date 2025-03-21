@@ -25,7 +25,7 @@ export const TodoFormSchema = z
   subtasks: z
     .array(subTaskSchema)
     .max(10, "You can add up to 10 subtasks only"),
-  })
+  });
   // .superRefine((data, ctx) => {
   //   if (data.status !== 'Completed' && !dayjs(data.due_at).isSame(dayjs(data.created_at), 'day')) {
   //     ctx.addIssue({
@@ -35,7 +35,7 @@ export const TodoFormSchema = z
   //     })
   //   }
   // })
-.refine((data) => !dayjs(data.due_at).isSame(dayjs(data.created_at), 'day'), {
-  message: "Due date cannot be equal to today",
-  path: ["due_at"]
-});
+// .refine((data) => !dayjs(data.due_at).isSame(dayjs(data.created_at), 'day'), {
+//   message: "Due date cannot be equal to today",
+//   path: ["due_at"]
+// });

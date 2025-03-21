@@ -80,8 +80,16 @@ class TodosController {
   }
 
   async updateTodos(req, res) {
-    const { title, description, priority, status, due_at, slug, completed_at } =
-      req.body || {};
+    const {
+      title,
+      description,
+      priority,
+      status,
+      due_at,
+      slug,
+      completed_at,
+      subtasks,
+    } = req.body || {};
     const errorMessage = "Failed to update todos!";
     const token = verifyToken(req.cookies?.yttmrtck);
 
@@ -105,7 +113,8 @@ class TodosController {
         status,
         due_at,
         completed_at,
-        slug
+        slug,
+        subtasks
       );
       return sendSuccessResponse(
         req,

@@ -1,10 +1,21 @@
-import { Fab, Box, Typography, Link } from "@mui/material";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import {
+  Fab,
+  Box,
+  Typography,
+  Link,
+  Divider,
+  List,
+  ListItem,
+  ListItemText,
+} from "@mui/material";
 import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useTodoDelete } from "../../api";
 import { useDialog } from "muibox";
+import { Key } from "react";
 
 const TodoView = () => {
   const location = useLocation();
@@ -16,6 +27,8 @@ const TodoView = () => {
   if (deleteTodo.isSuccess) {
     navigate("/admin");
   }
+
+  const subtasks = JSON.parse(data.subtasks) ?? [];
 
   const handleDelete = () => {
     dialog
@@ -80,7 +93,7 @@ const TodoView = () => {
       case "In Progress":
         return (
           <>
-            <img src="/images/in-progress.svg" alt="In Progress" />;
+            <img src="/images/in-progress.svg" alt="In Progress" />
             <Typography
               component="span"
               sx={{
@@ -190,7 +203,7 @@ const TodoView = () => {
         </Box>
       </Box>
       <Box sx={{ width: "100%", maxWidth: 500 }}>
-        <Typography variant="h3">{data.title}</Typography>
+        <Typography variant="h4">{data.title}</Typography>
         <Typography variant="subtitle1" gutterBottom>
           {dayjs(data.created_at).format("DD MMM YYYY")} -{" "}
           {dayjs(data.due_at).format("DD MMM YYYY")}
@@ -199,6 +212,27 @@ const TodoView = () => {
           {data.description}
         </Typography>
       </Box>
+      {subtasks && subtasks.length > 0 && (
+        <Box sx={{ width: "100%" }}>
+          <Divider sx={{ mt: 1 }} />
+          <Typography variant="h5" sx={{ mt: 1 }}>
+            Subtasks
+          </Typography>
+          <List>
+            {subtasks.map(
+              (
+                value: { description: string; status: string },
+                index: Key | null | undefined
+              ) => (
+                <ListItem key={index}>
+                  <ListItemText primary={value.description} />
+                  <ListItemText primary={value.status} />
+                </ListItem>
+              )
+            )}
+          </List>
+        </Box>
+      )}
     </>
   );
 };
