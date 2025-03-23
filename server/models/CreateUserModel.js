@@ -22,8 +22,8 @@ export const createUser = async (username, password) => {
     try {
       const [rows] = await connection.then((establishedConnection) =>
         establishedConnection.query(
-          "INSERT INTO user (u_user_id, u_name, u_email, u_password) VALUES (?, ?, ?, ?)",
-          [generateGUID(), username, "test@test.com", hash]
+          "INSERT INTO user (u_user_id, u_name, u_password) VALUES (?, ?, ?)",
+          [generateGUID(), username, hash]
         )
       );
       console.log("Record Created:", rows);

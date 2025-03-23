@@ -11,14 +11,18 @@ import {
   Box,
   Drawer,
   AppBar,
+  ListItemAvatar,
+  Avatar,
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import LogoutIcon from "@mui/icons-material/Logout";
 import MenuIcon from "@mui/icons-material/Menu";
+import PersonIcon from "@mui/icons-material/Person";
 import React from "react";
 import { useLogout } from "../../utils/hooks/useLogout";
 import { useNavigate } from "react-router-dom";
 import { useDialog } from "muibox";
+import { useAuthContext } from "../../utils/hooks/useCustomContext";
 
 const drawerWidth = 240;
 
@@ -32,6 +36,7 @@ export default function MainAppBar(props: Props) {
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const dialog = useDialog();
+  const { user } = useAuthContext();
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -60,6 +65,15 @@ export default function MainAppBar(props: Props) {
       <Toolbar />
       <Divider />
       <List>
+        <ListItem>
+          <ListItemAvatar sx={{ margin: "0 auto;" }}>
+            <Avatar sx={{ m: 1 }}>
+              <PersonIcon />
+            </Avatar>
+            {`Hi, ${user?.name}`}
+          </ListItemAvatar>
+        </ListItem>
+        <Divider />
         {["Home", "Logout"].map((text, index) => (
           <ListItem key={text} onClick={() => handleIcon(index)} disablePadding>
             <ListItemButton>

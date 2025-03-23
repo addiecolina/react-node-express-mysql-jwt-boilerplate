@@ -13,6 +13,7 @@ import {
   Button,
   Grid,
   Typography,
+  Divider,
 } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -27,6 +28,7 @@ import { TodoFormSchema } from "../../model/todoSchema";
 import StatusPanel from "./panels/StatusPanel";
 import DetailsPanel from "./panels/DetailsPanel";
 import ActionPanel from "./panels/ActionPanel";
+import { useDialog } from "muibox";
 
 type TodoFormData = z.infer<typeof TodoFormSchema>;
 
@@ -38,6 +40,7 @@ const TodoForm = () => {
   const mode = location.state?.mode || "add";
   const data = location.state?.data || {};
   const { user } = useAuthContext();
+  const dialog = useDialog();
 
   if (updateTodo.isSuccess || createTodo.isSuccess) {
     navigate("/admin");
@@ -81,6 +84,15 @@ const TodoForm = () => {
     control,
     name: "subtasks",
   });
+
+  const onRemoveSubTask = (index: number) => {
+    dialog
+      .confirm("Are you sure you want to delete this subtask?")
+      .then(() => {
+        remove(index);
+      })
+      .catch(() => console.log("Cancelled Deletion!"));
+  };
 
   const onSubmit = async (form: TodoFormData) => {
     if (
@@ -128,6 +140,7 @@ const TodoForm = () => {
               <StatusPanel />
             </Box>
             <DetailsPanel />
+            <Divider sx={{ mt: 2 }} />
             <Grid container spacing={2} sx={{ mt: 2 }}>
               <Typography variant="h6" sx={{ paddingLeft: "16px" }}>
                 Subtasks
@@ -175,7 +188,7 @@ const TodoForm = () => {
                     <Button
                       variant="text"
                       color="warning"
-                      onClick={() => remove(index)}
+                      onClick={() => onRemoveSubTask(index)}
                       disabled={status === "Completed"}
                     >
                       <DeleteIcon />
@@ -183,7 +196,7 @@ const TodoForm = () => {
                   </Grid>
                 </Grid>
               ))}
-              <Grid item xs={12}>
+              <Grid item xs={12} sx={{ mb: 2 }}>
                 <Button
                   variant="outlined"
                   onClick={() =>

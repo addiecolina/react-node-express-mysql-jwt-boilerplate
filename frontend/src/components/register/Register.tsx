@@ -1,7 +1,16 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useWatch, Control } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { TextField, Button, Alert } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Alert,
+  Typography,
+  List,
+  ListItem,
+  ListItemText,
+  Link,
+} from "@mui/material";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { ApiResponse } from "../../../types/ApiResponse";
@@ -9,12 +18,13 @@ import axios from "axios";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
 import LandingWrapper from "../shared/LandingWrapper";
 import Copyright from "../shared/Copyright";
 import { InputAdornment, IconButton } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import DoneIcon from "@mui/icons-material/Done";
+import CloseIcon from "@mui/icons-material/Close";
 
 const schema = z
   .object({
@@ -42,9 +52,41 @@ const schema = z
 
 type FormData = z.infer<typeof schema>;
 
+function PasswordWatched({ control }: { control: Control<FormData> }) {
+  const password = useWatch({
+    control,
+    name: "password",
+  });
+
+  const hasLetter = /[a-zA-Z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  const hasSpecial = /[ !#()_-]/g.test(password);
+
+  return password !== undefined && password !== "" ? (
+    <List sx={{ width: "100%", bgcolor: "background.paper" }} dense>
+      <ListItem
+        sx={{ color: hasLetter ? "green" : "red", fontSize: "12px" }}
+        disablePadding
+      >
+        {hasLetter ? <DoneIcon /> : <CloseIcon />}
+        <ListItemText primary="Password must contain at least one letter" />
+      </ListItem>
+      <ListItem sx={{ color: hasNumber ? "green" : "red" }} disablePadding>
+        {hasNumber ? <DoneIcon /> : <CloseIcon />}
+        <ListItemText primary="Password must contain at least one number" />
+      </ListItem>
+      <ListItem sx={{ color: hasSpecial ? "green" : "red" }} disablePadding>
+        {hasSpecial ? <DoneIcon /> : <CloseIcon />}
+        <ListItemText primary="Password must contain at least one special character" />
+      </ListItem>
+    </List>
+  ) : null;
+}
+
 const Register: React.FC = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showToast, setShowToast] = useState<boolean>(false);
   const [alertMessage, setAlertMessage] = useState<string>("");
   const createAxiosInstance = useCallback(() => {
     const axiosInstance = axios.create({
@@ -81,8 +123,10 @@ const Register: React.FC = () => {
       );
 
       if (response.data.success) {
-        navigate("/", { replace: true });
+        setShowToast(true);
+        setTimeout(() => navigate("/", { replace: true }), 5000);
       }
+
       if (response.data.error) {
         setAlertMessage(response.data.error.message);
       }
@@ -126,6 +170,11 @@ const Register: React.FC = () => {
             onSubmit={handleSubmit(onSubmit)}
             sx={{ mt: 1 }}
           >
+            {showToast && (
+              <Alert severity="success">
+                Successfully created user. Redirecting to Login...
+              </Alert>
+            )}
             <Controller
               name="username"
               control={control}
@@ -175,6 +224,7 @@ const Register: React.FC = () => {
                 />
               )}
             />
+            <PasswordWatched control={control} />
             <Button
               type="submit"
               fullWidth
@@ -183,6 +233,13 @@ const Register: React.FC = () => {
             >
               Create Account
             </Button>
+            <Grid container>
+              <Grid item>
+                <Link href="/" variant="body2">
+                  {"Already have an account? Login here"}
+                </Link>
+              </Grid>
+            </Grid>
             {alertMessage && (
               <Alert sx={{ mt: 1, mb: 1 }} severity="error">
                 {alertMessage}
