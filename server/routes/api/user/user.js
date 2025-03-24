@@ -1,5 +1,7 @@
 import express from "express";
 import UserController from "../../../controllers/api/UserController.js";
+import { validateData } from "../../../middlewares/validationMiddleware.js";
+import { userSchema } from "../../../schemas/userSchema.js";
 
 const userController = new UserController();
 
@@ -11,7 +13,7 @@ router.use(
   })
 );
 
-router.post("/createUser", userController.createUser);
+router.post("/createUser", validateData(userSchema), userController.createUser);
 
 router.get("*", function (req, res) {
   res.status(404).json({

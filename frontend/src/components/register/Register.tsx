@@ -109,6 +109,7 @@ const Register: React.FC = () => {
 
   const createUser = useCallback(
     async (data: { username: string; password: string }) => {
+      setAlertMessage("");
       const response = await axiosInstance.post<ApiResponse>(
         "/user/createUser",
         {

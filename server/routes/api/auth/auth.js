@@ -1,5 +1,7 @@
 import express from "express";
 import AuthController from "../../../controllers/api/AuthController.js";
+import { validateData } from "../../../middlewares/validationMiddleware.js";
+import { userSchema } from "../../../schemas/userSchema.js";
 
 const authController = new AuthController();
 
@@ -11,7 +13,7 @@ router.use(
   })
 );
 
-router.post("/login", authController.login);
+router.post("/login", validateData(userSchema), authController.login);
 
 router.get("/verifyToken", authController.verifyTokenController);
 

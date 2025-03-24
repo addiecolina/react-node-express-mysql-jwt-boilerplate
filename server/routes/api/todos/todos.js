@@ -1,5 +1,7 @@
 import express from "express";
 import TodosController from "../../../controllers/api/TodosController.js";
+import { validateData } from "../../../middlewares/validationMiddleware.js";
+import { todoFormSchema } from "../../../schemas/todoSchema.js";
 
 const todosController = new TodosController();
 
@@ -12,8 +14,16 @@ router.use(
 );
 
 router.get("/getTodos/:id", todosController.getTodos);
-router.post("/createTodos", todosController.createTodos);
-router.put("/updateTodos", todosController.updateTodos);
+router.post(
+  "/createTodos",
+  validateData(todoFormSchema),
+  todosController.createTodos
+);
+router.put(
+  "/updateTodos",
+  validateData(todoFormSchema),
+  todosController.updateTodos
+);
 router.delete("/deleteTodos", todosController.deleteTodos);
 
 router.get("*", function (req, res) {
