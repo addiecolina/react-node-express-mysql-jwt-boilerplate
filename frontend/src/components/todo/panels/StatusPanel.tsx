@@ -64,7 +64,7 @@ const StatusPanel = () => {
               <Select
                 onChange={onChange}
                 label="Priority"
-                value={value}
+                value={value ?? ""}
                 sx={minWidth === null ? {} : { minWidth: minWidth + 14 }}
                 MenuProps={{
                   keepMounted: true,

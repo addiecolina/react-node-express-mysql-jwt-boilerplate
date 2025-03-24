@@ -1,6 +1,6 @@
 import { Box, Fab } from "@mui/material";
 import { useFormContext } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 import CheckIcon from "@mui/icons-material/Check";
@@ -8,6 +8,8 @@ import CheckIcon from "@mui/icons-material/Check";
 const ActionPanel = () => {
   const { watch, setValue } = useFormContext();
   const navigate = useNavigate();
+  const location = useLocation();
+  const mode = location.state?.mode || "add";
 
   const status = watch("status");
   const subtasks = watch("subtasks");
@@ -39,7 +41,10 @@ const ActionPanel = () => {
         },
       }}
     >
-      {isSubTaskComplete && status !== "Completed" && subtasks.length > 0 ? (
+      {isSubTaskComplete &&
+      status !== "Completed" &&
+      subtasks.length > 0 &&
+      mode !== "add" ? (
         <Fab
           color="primary"
           aria-label="mark as completed"
