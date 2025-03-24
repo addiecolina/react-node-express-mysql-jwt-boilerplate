@@ -7,11 +7,22 @@ import AddIcon from "@mui/icons-material/Add";
 import { Link as RouterLink } from "react-router-dom";
 import TodoTable from "../../todo/Table";
 import MainAppBar from "../../shared/MainAppBar";
+import { useQuery } from "@tanstack/react-query";
+import { Alert } from "@mui/material";
 
 const drawerWidth = 240;
 
 export default function Dashboard() {
   const { user } = useAuthContext();
+  const { isSuccess: isDeleteSuccess, isStale: isDeleteStale } = useQuery({
+    queryKey: ["deleteTodo"],
+  });
+  const { isSuccess: isAddSuccess, isStale: isAddStale } = useQuery({
+    queryKey: ["addTodo"],
+  });
+  const { isSuccess: isEditSuccess, isStale: isEditStale } = useQuery({
+    queryKey: ["editTodo"],
+  });
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -51,6 +62,15 @@ export default function Dashboard() {
               <AddIcon />
             </Fab>
           </Link>
+          {isEditSuccess && isEditStale && (
+            <Alert severity="success">Update Record Success</Alert>
+          )}
+          {isAddSuccess && isAddStale && (
+            <Alert severity="success">Create Record Success</Alert>
+          )}
+          {isDeleteSuccess && isDeleteStale && (
+            <Alert severity="success">Delete Record Success</Alert>
+          )}
           {user?.name && <TodoTable id={user.name} />}
         </Box>
       </Box>

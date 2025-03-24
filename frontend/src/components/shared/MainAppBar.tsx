@@ -13,6 +13,7 @@ import {
   AppBar,
   ListItemAvatar,
   Avatar,
+  Typography,
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -53,7 +54,7 @@ export default function MainAppBar(props: Props) {
           .then(() => {
             logout();
           })
-          .catch(() => console.log("Cancelled Deletion!"));
+          .catch(() => console.log("Cancelled Logout!"));
         break;
       default:
         break;
@@ -66,11 +67,19 @@ export default function MainAppBar(props: Props) {
       <Divider />
       <List>
         <ListItem>
-          <ListItemAvatar sx={{ margin: "0 auto;" }}>
+          <ListItemAvatar
+            sx={{
+              margin: "0 auto",
+              display: "flex",
+              flexDirection: "column",
+              flexWrap: "wrap",
+              alignItems: "center",
+            }}
+          >
             <Avatar sx={{ m: 1 }}>
               <PersonIcon />
             </Avatar>
-            {`Hi, ${user?.name}`}
+            <Typography variant="body1">{`Hi, ${user?.name}`}</Typography>
           </ListItemAvatar>
         </ListItem>
         <Divider />

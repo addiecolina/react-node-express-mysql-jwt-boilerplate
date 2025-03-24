@@ -9,7 +9,7 @@ import useAxiosInstance from "../../utils/config/axiosInstance";
 import { ApiResponse } from "../../../types/ApiResponse";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import Checkbox from "@mui/material/Checkbox";
+// import Checkbox from "@mui/material/Checkbox";
 import Link from "@mui/material/Link";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
@@ -195,7 +195,7 @@ const Login = () => {
                 />
               )}
             />
-            <label>Stay signed in</label>
+            {/* <label>Stay signed in</label>
             <Controller
               name="staySignedIn"
               control={control}
@@ -205,7 +205,7 @@ const Login = () => {
                   checked={field.value}
                 />
               )}
-            />
+            /> */}
             <Button
               type="submit"
               fullWidth

@@ -168,7 +168,7 @@ const TodoTable: React.FC<TableProps> = (props: TableProps) => {
           console.log(recordMap);
           deleteTodo.mutate(recordMap);
         })
-        .catch(() => console.log("Cancelled Deletion!"));
+        .catch(() => console.log("Cancelled Logout!"));
     },
     expandableRows: true,
     expandableRowsHeader: false,

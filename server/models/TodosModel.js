@@ -84,7 +84,6 @@ export const updateTodoById = async (
   }
 
   try {
-    console.log(subtasks);
     const [rows] = await pool.query(
       "UPDATE todos SET title = ?, description = ?, priority = ?, status = ?, due_at = ?, subtasks = ?, completed_at = ? WHERE slug = ?",
       [

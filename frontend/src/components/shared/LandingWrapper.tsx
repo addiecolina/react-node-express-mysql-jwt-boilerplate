@@ -1,10 +1,13 @@
 import CssBaseline from "@mui/material/CssBaseline";
 import Grid from "@mui/material/Grid";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import useMedia from "../../utils/hooks/useMedia";
 
 const theme = createTheme();
 
 const LandingWrapper = ({ children }: { children: React.ReactNode }) => {
+  const isWide = useMedia("(min-width: 1024px)");
+
   return (
     <ThemeProvider theme={theme}>
       <Grid container component="main" sx={{ height: "100vh" }}>
@@ -25,6 +28,18 @@ const LandingWrapper = ({ children }: { children: React.ReactNode }) => {
             backgroundPosition: "center",
           }}
         />
+        {isWide && (
+          <img
+            src="/images/brand.svg"
+            alt="Navtask Brand"
+            style={{
+              position: "fixed",
+              top: "40%",
+              left: "20%",
+            }}
+          />
+        )}
+
         {children}
       </Grid>
     </ThemeProvider>

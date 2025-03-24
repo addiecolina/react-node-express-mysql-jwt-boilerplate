@@ -18,7 +18,7 @@ export const getUserByEmail = async (username, role) => {
     console.log("User:", rows[0]);
     return rows[0];
   } catch (error) {
-    console.log("get user error");
+    console.log("Get user error");
     return null;
   }
 };

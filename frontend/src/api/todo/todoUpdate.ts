@@ -4,7 +4,6 @@ import { todoQueryKeys } from "./todoQueryKeys";
 import { TodoFormData } from "../../../types/Todo";
 
 const updateTodo = async (formData: TodoFormData) => { 
-    console.log('update todo', formData)
     const response = await apiInstance.put('todo/updateTodos', formData);
     return response.data;
 }
@@ -18,13 +17,13 @@ export function useTodoUpdate() {
             await queryClient.cancelQueries({ queryKey: todoQueryKeys.all });
         },
         onSuccess: (data) => {
-            console.log('data updated', data);
+            queryClient.setQueryData(todoQueryKeys.edit, data);
         },
         onError: (err, context) => {
-            queryClient.setQueryData(todoQueryKeys.all, context);
+            queryClient.setQueryData(todoQueryKeys.edit, context);
         },
         onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: todoQueryKeys.all })
+            queryClient.invalidateQueries({ queryKey: todoQueryKeys.edit })
         }
     })
 }

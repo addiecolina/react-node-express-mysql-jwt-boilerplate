@@ -8,7 +8,7 @@ class UserController {
     const errorMessage = "Failed to create user!";
 
     if (!username || !password) {
-      return sendErrorResponse(req, res, 401, errorMessage);
+      return sendErrorResponse(req, res, 400, errorMessage);
     }
 
     try {
@@ -17,7 +17,7 @@ class UserController {
       const user = await createUser(username, password);
       return sendSuccessResponse(req, res, "Successfully created user!", user);
     } catch {
-      return sendErrorResponse(req, res, 401, "User already exists!");
+      return sendErrorResponse(req, res, 400, "User already exists!");
     }
   }
 }

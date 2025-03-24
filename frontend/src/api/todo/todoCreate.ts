@@ -17,13 +17,13 @@ export function useTodoCreate() {
             await queryClient.cancelQueries({ queryKey: todoQueryKeys.all });
         },
         onSuccess: (data) => {
-            console.log('data created', data);
+            queryClient.setQueryData(todoQueryKeys.add, data);
         },
         onError: (err, context) => {
-            queryClient.setQueryData(todoQueryKeys.all, context);
+            queryClient.setQueryData(todoQueryKeys.add, context);
         },
         onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: todoQueryKeys.all })
+            queryClient.invalidateQueries({ queryKey: todoQueryKeys.add })
         }
     })
 }
