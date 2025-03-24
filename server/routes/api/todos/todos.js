@@ -20,7 +20,7 @@ router.use(function (req, res, next) {
   next();
 });
 
-// router.use(responseInterceptor);
+router.use(responseInterceptor);
 router.get("/getTodos/:id", todosController.getTodos);
 router.post(
   "/createTodos",

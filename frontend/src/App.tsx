@@ -5,7 +5,11 @@ import {
   Routes,
 } from "react-router-dom";
 import Landing from "./pages/landing/LandingPage";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  QueryCache,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
 import "./style.css";
 import AuthProviderRoutes from "./utils/routes/AuthProviderRoutes";
 import HeaderLayout from "./layouts/HeaderLayout";
@@ -17,12 +21,25 @@ import Stack from "@mui/material/Stack";
 import { DialogProvider } from "muibox";
 import { Box, Fab, Link } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
+import { toast, Toaster } from "react-hot-toast";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  queryCache: new QueryCache({
+    onError: (error, query) => {
+      if (query.state.data !== undefined) {
+        console.log("error in query", error);
+        toast.error(
+          "Oops! Something went wrong. Please contact your system administrator"
+        );
+      }
+    },
+  }),
+});
 
 function Fallback({ error }: { error: Error }) {
   return (
     <Stack sx={{ width: "100%" }} spacing={2}>
+      <Toaster />
       <Alert severity="error">
         <AlertTitle>Error</AlertTitle>
         {error.message}

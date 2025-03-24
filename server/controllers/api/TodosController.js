@@ -11,7 +11,7 @@ class TodosController {
   async getTodos(req, res) {
     const { id } = req.params || {};
     const errorMessage = "Failed to get todos!";
-    const token = verifyToken(req.headers.authorization.split(" ")[1]);
+    const token = verifyToken(req.cookies?.yttmrtck);
 
     if (!id || !token) {
       return sendErrorResponse(req, res, 400, errorMessage);
@@ -91,7 +91,7 @@ class TodosController {
       subtasks,
     } = req.body || {};
     const errorMessage = "Failed to update todos!";
-    const token = verifyToken(req.headers.authorization.split(" ")[1]);
+    const token = verifyToken(req.cookies?.yttmrtck);
 
     if (
       !title ||
@@ -130,7 +130,7 @@ class TodosController {
   async deleteTodos(req, res) {
     const { slugs } = req.body || {};
     const errorMessage = "Failed to delete todos!";
-    const token = verifyToken(req.headers.authorization.split(" ")[1]);
+    const token = verifyToken(req.cookies?.yttmrtck);
 
     if (!slugs || !token) {
       return sendErrorResponse(req, res, 400, errorMessage);
