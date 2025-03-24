@@ -141,10 +141,31 @@ const TodoForm = () => {
             </Box>
             <DetailsPanel />
             <Divider sx={{ mt: 2 }} />
-            <Grid container spacing={2} sx={{ mt: 2 }}>
-              <Typography variant="h6" sx={{ paddingLeft: "16px" }}>
-                Subtasks
-              </Typography>
+            <Grid container spacing={2} sx={{ mt: 2, mb: 4 }}>
+              <Grid
+                item
+                xs={12}
+                sx={{
+                  mb: 2,
+                  display: "flex",
+                  flexDirection: "row",
+                  flexWrap: "wrap",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Typography variant="h6" sx={{ paddingLeft: "16px" }}>
+                  Subtasks
+                </Typography>
+                <Button
+                  variant="outlined"
+                  onClick={() =>
+                    append({ description: "", status: "Not Done" })
+                  }
+                  disabled={fields.length >= 10 || status === "Completed"}
+                >
+                  Add Subtask
+                </Button>
+              </Grid>
               {fields.map((field, index) => (
                 <Grid
                   container
@@ -196,17 +217,6 @@ const TodoForm = () => {
                   </Grid>
                 </Grid>
               ))}
-              <Grid item xs={12} sx={{ mb: 2 }}>
-                <Button
-                  variant="outlined"
-                  onClick={() =>
-                    append({ description: "", status: "Not Done" })
-                  }
-                  disabled={fields.length >= 10 || status === "Completed"}
-                >
-                  Add Subtask
-                </Button>
-              </Grid>
             </Grid>
             <ActionPanel />
           </Box>

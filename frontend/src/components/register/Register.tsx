@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { useForm, Controller, useWatch, Control } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
 import {
   TextField,
   Button,
@@ -91,7 +91,7 @@ const Register: React.FC = () => {
   const createAxiosInstance = useCallback(() => {
     const axiosInstance = axios.create({
       baseURL: import.meta.env.VITE_API_PUBLIC_URL,
-      timeout: 1000,
+      timeout: 5000,
       withCredentials: true,
       validateStatus: function (status) {
         return status >= 200 && status < 600;
@@ -232,11 +232,11 @@ const Register: React.FC = () => {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Create Account
+              Create
             </Button>
             <Grid container>
               <Grid item>
-                <Link href="/" variant="body2">
+                <Link component={RouterLink} to="/" variant="body2">
                   {"Already have an account? Login here"}
                 </Link>
               </Grid>

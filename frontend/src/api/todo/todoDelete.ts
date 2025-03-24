@@ -16,13 +16,13 @@ export function useTodoDelete() {
             await queryClient.cancelQueries({ queryKey: todoQueryKeys.all });
         },
         onSuccess: (data) => {
-            queryClient.setQueryData(todoQueryKeys.delete, data);
+            queryClient.setQueryData(todoQueryKeys.all, data);
         },
         onError: (err, context) => {
-            queryClient.setQueryData(todoQueryKeys.delete, context);
+            queryClient.setQueryData(todoQueryKeys.all, context);
         },
         onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: todoQueryKeys.delete })
+            queryClient.invalidateQueries({ queryKey: todoQueryKeys.all })
         }
     })
 }

@@ -17,13 +17,13 @@ export function useTodoCreate() {
             await queryClient.cancelQueries({ queryKey: todoQueryKeys.all });
         },
         onSuccess: (data) => {
-            queryClient.setQueryData(todoQueryKeys.add, data);
+            queryClient.setQueryData(todoQueryKeys.all, data);
         },
         onError: (err, context) => {
-            queryClient.setQueryData(todoQueryKeys.add, context);
+            queryClient.setQueryData(todoQueryKeys.all, context);
         },
         onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: todoQueryKeys.add })
+            queryClient.invalidateQueries({ queryKey: todoQueryKeys.all })
         }
     })
 }

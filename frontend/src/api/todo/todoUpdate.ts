@@ -17,13 +17,13 @@ export function useTodoUpdate() {
             await queryClient.cancelQueries({ queryKey: todoQueryKeys.all });
         },
         onSuccess: (data) => {
-            queryClient.setQueryData(todoQueryKeys.edit, data);
+            queryClient.setQueryData(todoQueryKeys.all, data);
         },
         onError: (err, context) => {
-            queryClient.setQueryData(todoQueryKeys.edit, context);
+            queryClient.setQueryData(todoQueryKeys.all, context);
         },
         onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: todoQueryKeys.edit })
+            queryClient.invalidateQueries({ queryKey: todoQueryKeys.all })
         }
     })
 }

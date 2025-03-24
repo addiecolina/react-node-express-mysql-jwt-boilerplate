@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link as RouterLink } from "react-router-dom";
 import { useVerifyToken } from "../../utils/hooks/useVerifyToken";
 import { useAuthContext } from "../../utils/hooks/useCustomContext";
 import useAxiosInstance from "../../utils/config/axiosInstance";
@@ -195,17 +195,6 @@ const Login = () => {
                 />
               )}
             />
-            {/* <label>Stay signed in</label>
-            <Controller
-              name="staySignedIn"
-              control={control}
-              render={({ field }) => (
-                <Checkbox
-                  onChange={(e) => field.onChange(e.target.checked)}
-                  checked={field.value}
-                />
-              )}
-            /> */}
             <Button
               type="submit"
               fullWidth
@@ -221,7 +210,7 @@ const Login = () => {
             )}
             <Grid container>
               <Grid item>
-                <Link href="/register" variant="body2">
+                <Link component={RouterLink} to="/register" variant="body2">
                   {"Don't have an account? Sign Up"}
                 </Link>
               </Grid>
