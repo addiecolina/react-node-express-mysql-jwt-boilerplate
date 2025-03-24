@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiInstance } from "../apiInstance";
 import { todoQueryKeys } from "./todoQueryKeys";
+import { useAuthContext } from "../../utils/hooks/useCustomContext";
 
 const deleteTodo = async (slugs: string[]) => { 
     const response = await apiInstance.delete('todo/deleteTodos', { data: { slugs } });
@@ -9,6 +10,9 @@ const deleteTodo = async (slugs: string[]) => {
 
 export function useTodoDelete() { 
     const queryClient = useQueryClient();
+    const { accessToken } = useAuthContext();
+
+    apiInstance.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
 
     return useMutation({
         mutationFn: deleteTodo,

@@ -1,6 +1,7 @@
 node_modules
 certs
 private
+logs
 public/uploads
 .env
 .env.*

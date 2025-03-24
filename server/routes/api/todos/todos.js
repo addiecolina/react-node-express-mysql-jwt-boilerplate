@@ -2,6 +2,7 @@ import express from "express";
 import TodosController from "../../../controllers/api/TodosController.js";
 import { validateData } from "../../../middlewares/validationMiddleware.js";
 import { todoFormSchema } from "../../../schemas/todoSchema.js";
+import { responseInterceptor } from "../../../middlewares/responseMiddleware.js";
 
 const todosController = new TodosController();
 
@@ -12,7 +13,14 @@ router.use(
     extended: true,
   })
 );
+router.use(function (req, res, next) {
+  if (!req.headers.authorization) {
+    return res.status(403).json({ error: "No credentials sent!" });
+  }
+  next();
+});
 
+// router.use(responseInterceptor);
 router.get("/getTodos/:id", todosController.getTodos);
 router.post(
   "/createTodos",

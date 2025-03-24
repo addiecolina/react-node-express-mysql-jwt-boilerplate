@@ -2,6 +2,7 @@ import express from "express";
 import AuthController from "../../../controllers/api/AuthController.js";
 import { validateData } from "../../../middlewares/validationMiddleware.js";
 import { userSchema } from "../../../schemas/userSchema.js";
+import { responseInterceptor } from "../../../middlewares/responseMiddleware.js";
 
 const authController = new AuthController();
 
@@ -12,6 +13,8 @@ router.use(
     extended: true,
   })
 );
+
+router.use(responseInterceptor);
 
 router.post("/login", validateData(userSchema), authController.login);
 

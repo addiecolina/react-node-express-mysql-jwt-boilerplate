@@ -2,6 +2,7 @@ import express from "express";
 import UserController from "../../../controllers/api/UserController.js";
 import { validateData } from "../../../middlewares/validationMiddleware.js";
 import { userSchema } from "../../../schemas/userSchema.js";
+import { responseInterceptor } from "../../../middlewares/responseMiddleware.js";
 
 const userController = new UserController();
 
@@ -12,6 +13,8 @@ router.use(
     extended: true,
   })
 );
+
+router.use(responseInterceptor);
 
 router.post("/createUser", validateData(userSchema), userController.createUser);
 
