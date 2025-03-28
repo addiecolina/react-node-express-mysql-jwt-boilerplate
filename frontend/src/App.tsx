@@ -27,7 +27,21 @@ const queryClient = new QueryClient({
   queryCache: new QueryCache({
     onError: (error, query) => {
       if (query.state.data !== undefined) {
-        console.log("error in query", error);
+        console.log("error", error);
+        toast.error(
+          "Oops! Something went wrong. Please contact your system administrator"
+        );
+      }
+    },
+    onSettled(data, error, query) {
+      if (
+        data &&
+        typeof data === "object" &&
+        "success" in data &&
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        !(data as any).success
+      ) {
+        console.log("error", data, error, query);
         toast.error(
           "Oops! Something went wrong. Please contact your system administrator"
         );
@@ -39,7 +53,6 @@ const queryClient = new QueryClient({
 function Fallback({ error }: { error: Error }) {
   return (
     <Stack sx={{ width: "100%" }} spacing={2}>
-      <Toaster />
       <Alert severity="error">
         <AlertTitle>Error</AlertTitle>
         {error.message}
@@ -72,6 +85,23 @@ function App() {
         <DialogProvider>
           <QueryClientProvider client={queryClient}>
             <BrowserRouter basename={import.meta.env.VITE_BASENAME}>
+              <Toaster
+                position="top-center"
+                reverseOrder={false}
+                gutter={8}
+                containerClassName=""
+                containerStyle={{}}
+                toastOptions={{
+                  // Define default options
+                  className: "",
+                  duration: 10000,
+                  removeDelay: 1000,
+                  style: {
+                    background: "#363636",
+                    color: "#fff",
+                  },
+                }}
+              />
               <Routes>
                 <Route path="*" element={<HeaderLayout />}>
                   <Route index element={<Landing />} />
