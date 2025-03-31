@@ -1,7 +1,10 @@
 import { z } from "zod";
 
 const subTaskSchema = z.object({
-  description: z.string().min(1, "Description is required"),
+  description: z
+    .string()
+    .min(1, "Description is required")
+    .max(25, "Description cannot be greater than 25 characters"),
   status: z.enum(["Done", "Not Done"]),
 });
 

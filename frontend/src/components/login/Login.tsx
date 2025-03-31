@@ -9,7 +9,6 @@ import useAxiosInstance from "../../utils/config/axiosInstance";
 import { ApiResponse } from "../../../types/ApiResponse";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-// import Checkbox from "@mui/material/Checkbox";
 import Link from "@mui/material/Link";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
@@ -20,6 +19,7 @@ import Copyright from "../shared/Copyright";
 import { InputAdornment, IconButton, Alert } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import { v4 as uuidv4 } from "uuid";
 
 const schema = z.object({
   username: z.string().min(1, { message: "Username cannot be blank" }),
@@ -88,6 +88,7 @@ const Login = () => {
         {
           headers: {
             "Content-Type": "application/json",
+            "X-Tracking-Id": uuidv4(),
           },
         }
       );

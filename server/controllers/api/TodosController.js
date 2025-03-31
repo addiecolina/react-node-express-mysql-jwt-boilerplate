@@ -42,7 +42,7 @@ class TodosController {
       subtasks,
     } = req.body || {};
     const errorMessage = "Failed to create todos!";
-    const token = verifyToken(req.headers.authorization.split(" ")[1]);
+    const token = verifyToken(req.cookies?.yttmrtck);
 
     if (
       !title ||

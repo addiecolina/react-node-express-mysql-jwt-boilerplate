@@ -25,6 +25,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import DoneIcon from "@mui/icons-material/Done";
 import CloseIcon from "@mui/icons-material/Close";
+import { v4 as uuidv4 } from "uuid";
 
 const schema = z
   .object({
@@ -119,6 +120,7 @@ const Register: React.FC = () => {
         {
           headers: {
             "Content-Type": "application/json",
+            "X-Tracking-Id": uuidv4(),
           },
         }
       );

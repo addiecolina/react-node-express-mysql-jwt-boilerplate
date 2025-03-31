@@ -122,7 +122,14 @@ const TodoView = () => {
                 value: { description: string; status: string },
                 index: Key | null | undefined
               ) => (
-                <ListItem key={index}>
+                <ListItem
+                  key={index}
+                  sx={{
+                    display: "grid",
+                    gridAutoFlow: "column",
+                    gridAutoColumns: "50% 50%",
+                  }}
+                >
                   <ListItemText primary={value.description} />
                   <ListItemText primary={getStatusIcon(value.status)} />
                 </ListItem>
